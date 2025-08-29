@@ -38,20 +38,33 @@
         <input
           name="listing[image]"
           type="file"
-          class="form-control"
-          
+          class="form-control mb-2"
         >
+        <input
+          name="listing[imageUrl]"
+          type="url"
+          class="form-control"
+          placeholder="Or paste a new image URL"
+        >
+        <small class="form-text text-muted">Upload a file or paste an image URL for the main photo.</small>
       </div>
 
       <div class="mb-3">
-        <label for="imageFilename" class="form-label">Filename</label>
+        <label for="otherImageUrls" class="form-label">Other Photos (up to 5)</label>
         <input
-          name="listing[image][filename]"
-          value="<%= listing.image.filename %>"
+          name="listing[otherImages]"
+          type="file"
+          class="form-control mb-2"
+          multiple
+          accept="image/*"
+        >
+        <input
+          name="listing[otherImageUrls]"
           type="text"
           class="form-control"
+          placeholder="Paste up to 5 image URLs, separated by commas"
         >
-        <div class="invalid-feedback">Enter a valid Image link</div>
+        <small class="form-text text-muted">Upload files or paste image URLs (comma separated) for additional photos.</small>
       </div>
 
       <div class="row">

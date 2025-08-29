@@ -7,9 +7,15 @@ const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
 
 module.exports.index = async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index", { allListings });
+  let search = req.query.search || "";
+  let filter = {};
+  if (search) {
+    // Case-insensitive search by location
+    filter.location = { $regex: search, $options: "i" };
   }
+  const allListings = await Listing.find(filter);
+  res.render("listings/index", { allListings, search });
+}
 
 module.exports.renderNewform = (req, res) => {
     return res.render("listings/new");
@@ -37,33 +43,51 @@ module.exports.createListing = async (req, res, next) => {
   let response = await geocodingClient.forwardGeocode({
     query: req.body.listing.location,
     limit: 1
-  })
-    .send();
-      
-  
-  
-  let url = req.file.path;
-    let filename = req.file.filename;
-    let { listing } = req.body;
-  
-    // Set default image if none provided
-    if (!listing.image || !listing.image.url) {
-        listing.image = {
-            url: "https://media.istockphoto.com/id/474185479/photo/barbados.jpg?s=612x612&w=0&k=20&c=CoMAIsVOAPd6IzyrigoQdTn6POtp-OSnMv0cS9AzBzc=", // Default URL
-            filename: "default.jpg", // Default filename
-        };
-    }
+  }).send();
 
-    // Now, create the listing
-    const newListing = new Listing(listing);
-    newListing.owner = req.user._id;
-    newListing.image = {url, filename};
-    newListing.geometry = response.body.features[0].geometry;
+  let { listing } = req.body;
 
-    let savedListing = await newListing.save();
-    console.log(savedListing);
-    req.flash("success", "New listing created!");
-    res.redirect("/listings");
+  // Handle main image: file or URL
+  let mainImage = { url: '', filename: '' };
+  if (req.file) {
+    mainImage.url = req.file.path;
+    mainImage.filename = req.file.filename;
+  } else if (listing.imageUrl) {
+    mainImage.url = listing.imageUrl;
+    mainImage.filename = '';
+  } else {
+    mainImage.url = "https://media.istockphoto.com/id/474185479/photo/barbados.jpg?s=612x612&w=0&k=20&c=CoMAIsVOAPd6IzyrigoQdTn6POtp-OSnMv0cS9AzBzc=";
+    mainImage.filename = "default.jpg";
+  }
+
+  // Handle other images: files and/or URLs
+  let otherImages = [];
+  if (req.files && req.files.length > 0) {
+    otherImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+  }
+  if (listing.otherImageUrls) {
+    // Accept comma-separated URLs
+    let urls = listing.otherImageUrls.split(',').map(u => u.trim()).filter(u => u);
+    urls.forEach(url => {
+      otherImages.push({ url, filename: '' });
+    });
+    // Limit to 5 images
+    otherImages = otherImages.slice(0, 5);
+  }
+
+  // Now, create the listing
+  const newListing = new Listing({
+    ...listing,
+    image: mainImage,
+    otherImages,
+    owner: req.user._id,
+    geometry: response.body.features[0].geometry
+  });
+
+  let savedListing = await newListing.save();
+  console.log(savedListing);
+  req.flash("success", "New listing created!");
+  res.redirect("/listings");
 }
 
 module.exports.renderEditForm = async (req, res) => {
@@ -80,15 +104,40 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateListing = async (req, res) => {
   let { id } = req.params;
-  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-  
-  if(typeof req.file !== "undefined"){
-    let url = req.file.path;
-    let filename = req.file.filename;
-    listing.image = {url, filename};
-    await listing.save();
+  let { listing } = req.body;
+  let updatedListing = await Listing.findById(id);
+
+  // Handle main image: file or URL
+  if (req.file) {
+    updatedListing.image = { url: req.file.path, filename: req.file.filename };
+  } else if (listing.imageUrl) {
+    updatedListing.image = { url: listing.imageUrl, filename: '' };
   }
 
+  // Handle other images: files and/or URLs
+  let otherImages = [];
+  if (req.files && req.files.length > 0) {
+    otherImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+  }
+  if (listing.otherImageUrls) {
+    let urls = listing.otherImageUrls.split(',').map(u => u.trim()).filter(u => u);
+    urls.forEach(url => {
+      otherImages.push({ url, filename: '' });
+    });
+    otherImages = otherImages.slice(0, 5);
+  }
+  if (otherImages.length > 0) {
+    updatedListing.otherImages = otherImages;
+  }
+
+  // Update other fields
+  updatedListing.title = listing.title;
+  updatedListing.description = listing.description;
+  updatedListing.location = listing.location;
+  updatedListing.country = listing.country;
+  updatedListing.price = listing.price;
+
+  await updatedListing.save();
   req.flash("success", "Listing Updated!");
   res.redirect(`/listings/${id}`);
 }

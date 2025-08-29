@@ -2,63 +2,363 @@
 
 <style>
     .listing-hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+        background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
+        padding: 3rem 0;
+        margin-bottom: 3rem;
         border-radius: 0 0 2rem 2rem;
-    }
-    
-    .listing-title {
-        color: white;
-        font-size: 2.5rem;
-        font-weight: 700;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        margin-bottom: 0;
-    }
-    
-    .listing-card {
-        border: none;
-        border-radius: 2rem;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        background: white;
-    }
-    
-    .listing-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-    }
-    
-    .img-container {
         position: relative;
         overflow: hidden;
-        height: 400px;
     }
     
-    .show-img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-    
-    .listing-card:hover .show-img {
-        transform: scale(1.05);
-    }
-    
-    .img-overlay {
+    .listing-hero::before {
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(transparent 60%, rgba(0,0,0,0.3));
-        pointer-events: none;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="0%" r="100%"><stop offset="0%" stop-color="white" stop-opacity="0.1"/><stop offset="100%" stop-color="white" stop-opacity="0.05"/></radialGradient></defs><rect width="100" height="20" fill="url(%23a)"/></svg>') repeat-x;
+        opacity: 0.3;
+    }
+    
+    .listing-title {
+        color: white;
+        font-size: 3rem;
+        font-weight: 800;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .listing-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        font-weight: 300;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* Photo Gallery Styles */
+
+    .photo-gallery-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        min-height: 500px;
+        background: #fff;
+        align-items: stretch;
+    }
+
+    .main-photo {
+        position: relative;
+        overflow: hidden;
+        background: #f8f9fa;
+        border-radius: 2rem;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+
+    .photo-overlay {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .main-gallery-img {
+        width: 100%;
+        height: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+        display: block;
+    }
+
+    .main-photo:hover .main-gallery-img {
+        transform: scale(1.05);
+    }
+    
+    .photo-overlay {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+    }
+    
+    .view-all-photos-btn {
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+    
+    .view-all-photos-btn:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+
+    .thumbnail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 1rem;
+        padding: 1rem;
+        height: 100%;
+        align-items: center;
+        justify-items: center;
+    }
+
+    .thumbnail-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem;
+        aspect-ratio: 4/3;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        width: 100%;
+        height: 100%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        background: #f8f9fa;
+    }
+
+    .thumbnail-item:hover {
+        transform: scale(1.02);
+    }
+
+    .thumbnail-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 1rem;
+        display: block;
+    }
+    
+    .more-photos {
+        position: relative;
+    }
+    
+    .more-photos-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    
+    .more-photos-overlay:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+    
+    .more-photos-overlay i {
+        margin-right: 0.5rem;
+    }
+
+    /* Photo Modal Styles */
+    .photo-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.95);
+    }
+    
+    .modal-content-photo {
+        display: flex;
+        height: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        gap: 1rem;
+    }
+    
+    .main-photo-display {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        border-radius: 1rem;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .main-modal-img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+    }
+    
+    .photo-thumbnails-sidebar {
+        width: 120px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
+    
+    .photo-thumbnails-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .photo-thumbnails-sidebar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    
+    .photo-thumbnails-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 3px;
+    }
+    
+    .photo-thumbnails-sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.7);
+    }
+    
+    .thumbnail-modal-item {
+        width: 100px;
+        height: 75px;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+    
+    .thumbnail-modal-item:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .thumbnail-modal-item.active {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+    
+    .thumbnail-modal-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1001;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+    }
+    
+    .close-modal:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+    
+    .photo-counter {
+        position: absolute;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 768px) {
+        .modal-content-photo {
+            flex-direction: column;
+            padding: 1rem;
+            gap: 0.5rem;
+        }
+        
+        .main-photo-display {
+            height: 70vh;
+        }
+        
+        .photo-thumbnails-sidebar {
+            width: 100%;
+            height: 100px;
+            flex-direction: row;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-right: 0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .photo-thumbnails-sidebar::-webkit-scrollbar {
+            height: 6px;
+            width: auto;
+        }
+        
+        .thumbnail-modal-item {
+            width: 80px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+        
+        .close-modal {
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 35px;
+            height: 35px;
+            font-size: 1.5rem;
+        }
     }
     
     .card-body {
-        padding: 2rem;
+        padding: 2.5rem;
         background: white;
     }
     
@@ -67,11 +367,11 @@
         align-items: center;
         background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
         color: white;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1.25rem;
         border-radius: 50px;
         font-size: 0.9rem;
         font-weight: 500;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
         box-shadow: 0 4px 15px rgba(238, 90, 111, 0.3);
     }
     
@@ -81,9 +381,10 @@
     
     .listing-description {
         font-size: 1.1rem;
-        line-height: 1.6;
+        line-height: 1.7;
         color: #555;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2.5rem;
+        padding: 0 0.5rem;
     }
     
     .price-tag {
@@ -103,9 +404,10 @@
         display: flex;
         align-items: center;
         background: #f8f9fa;
-        padding: 1rem;
+        padding: 1.25rem;
         border-radius: 1rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        margin-top: 1rem;
         border-left: 4px solid #007bff;
     }
     
@@ -115,11 +417,126 @@
         font-size: 1.2rem;
     }
     
-    .action-buttons {
+    /* Sidebar Styles */
+    .sidebar-content {
+        position: sticky;
+        top: 2rem;
+    }
+    
+    .price-card {
+        background: white;
+        border-radius: 2rem;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        border: 2px solid #f8f9fa;
+    }
+    
+    .price-tag-sidebar {
+        background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        font-size: 2.2rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
+    }
+    
+    .price-tag-sidebar small {
+        font-size: 1rem;
+        opacity: 0.8;
+        display: block;
+        margin-top: 0.5rem;
+    }
+    
+    .btn-edit-sidebar, .btn-delete-sidebar, .btn-book {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-edit-sidebar {
+        background: linear-gradient(135deg, #ff9a9e, #fecfef);
+        color: #333;
+        box-shadow: 0 8px 25px rgba(255, 154, 158, 0.3);
+    }
+    
+    .btn-edit-sidebar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(255, 154, 158, 0.4);
+        color: #333;
+    }
+    
+    .btn-delete-sidebar {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        color: white;
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    }
+    
+    .btn-delete-sidebar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+        color: white;
+    }
+    
+    .btn-book {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-book:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .quick-facts-card, .features-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+        border: 2px solid #f8f9fa;
+    }
+    
+    .quick-facts-card h5, .features-card h5 {
+        color: #333;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f8f9fa;
+    }
+    
+    .fact-item, .feature-item {
         display: flex;
-        gap: 1rem;
-        margin: 2rem 0;
-        justify-content: center;
+        align-items: center;
+        padding: 0.5rem 0;
+        color: #666;
+    }
+    
+    .fact-item i, .feature-item i {
+        color: #667eea;
+        margin-right: 1rem;
+        width: 20px;
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 992px) {
+        .sidebar-content {
+            position: static;
+            margin-top: 2rem;
+        }
+        
+        .price-tag-sidebar {
+            font-size: 1.8rem;
+        }
     }
     
     .btn-modern {
@@ -320,7 +737,11 @@
     
     @media (max-width: 768px) {
         .listing-title {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
+        }
+        
+        .listing-subtitle {
+            font-size: 1rem;
         }
         
         .action-buttons {
@@ -349,21 +770,53 @@
         <div class="row">
             <div class="col-12 text-center">
                 <h1 class="listing-title"><%= listing.title %></h1>
+                <p class="listing-subtitle"><%= listing.location %></p>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container">
-    <div class="row justify-content-center">
-        <!-- Main Listing Card -->
-        <div class="col-lg-8 col-md-10">
-            <div class="card listing-card">
-                <div class="img-container">
-                    <img src="<%= listing.image.url %>" class="show-img" alt="listing_image">
-                    <div class="img-overlay"></div>
+    <div class="row">
+        <!-- Photo Gallery Section -->
+        <div class="col-12">
+            <div class="photo-gallery-section">
+                <div class="main-photo">
+                    <img src="<%= listing.image.url %>" class="main-gallery-img" alt="Main listing image">
+                    <div class="photo-overlay">
+                        <button class="view-all-photos-btn" onclick="openPhotoModal()">
+                            <i class="fas fa-images"></i> View All Photos
+                        </button>
+                    </div>
                 </div>
-                
+                <div class="thumbnail-grid">
+                    <div class="thumbnail-item">
+                        <img src="<%= listing.image.url %>" class="thumbnail-img" alt="Property view 1">
+                    </div>
+                    <div class="thumbnail-item">
+                        <img src="<%= listing.image.url %>" class="thumbnail-img" alt="Property view 2">
+                    </div>
+                    <div class="thumbnail-item">
+                        <img src="<%= listing.image.url %>" class="thumbnail-img" alt="Property view 3">
+                    </div>
+                    <div class="thumbnail-item">
+                        <img src="<%= listing.image.url %>" class="thumbnail-img" alt="Property view 4">
+                    </div>
+                    <div class="thumbnail-item more-photos">
+                        <img src="<%= listing.image.url %>" class="thumbnail-img" alt="More photos">
+                        <div class="more-photos-overlay" onclick="openPhotoModal()">
+                            <span><i class="fas fa-plus"></i> 5+ More</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Listing Card -->
+        <div class="col-lg-8 col-md-7">
+            <div class="card listing-card">
                 <div class="card-body">
                     <div class="owner-info">
                         <i class="fas fa-user"></i>
@@ -373,10 +826,6 @@
                     <p class="listing-description">
                         <%= listing.description %>
                     </p>
-                    
-                    <div class="price-tag">
-                        &#8377; <%= listing.price.toLocaleString("en-IN") %>
-                    </div>
                     
                     <div class="location-info">
                         <i class="fas fa-map-marker-alt"></i>
@@ -388,29 +837,87 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Action Buttons -->
-    <% if(currUser && listing.owner._id.equals(currUser._id)) {%>
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="action-buttons">
-                <a href="/listings/<%= listing.id %>/edit" class="btn btn-modern btn-edit">
-                    <i class="fas fa-edit"></i> Edit Listing
-                </a>
-                <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" style="display: inline;">
-                    <button class="btn btn-modern btn-delete">
-                        <i class="fas fa-trash"></i> Delete Listing
-                    </button>
-                </form>
+        <!-- Sidebar with Price and Quick Info -->
+        <div class="col-lg-4 col-md-5">
+            <div class="sidebar-content">
+                <!-- Price Card -->
+                <div class="price-card">
+                    <div class="price-tag-sidebar">
+                        &#8377; <%= listing.price.toLocaleString("en-IN") %>
+                        <small>/night</small>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <% if(currUser && listing.owner._id.equals(currUser._id)) {%>
+                        <a href="/listings/<%= listing.id %>/edit" class="btn btn-modern btn-edit-sidebar">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" style="margin-top: 1rem;">
+                            <button class="btn btn-modern btn-delete-sidebar w-100">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                        <% } else { %>
+                        <button class="btn btn-modern btn-book" disabled>
+                            <i class="fas fa-calendar-alt"></i> Book Now
+                        </button>
+                        <small class="text-muted d-block mt-2">Contact host to book</small>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Quick Facts Card -->
+                <div class="quick-facts-card">
+                    <h5><i class="fas fa-info-circle"></i> Quick Facts</h5>
+                    <div class="fact-item">
+                        <i class="fas fa-user"></i>
+                        <span>Host: <%= listing.owner.username %></span>
+                    </div>
+                    <div class="fact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span><%= listing.location %>, <%= listing.country %></span>
+                    </div>
+                    <div class="fact-item">
+                        <i class="fas fa-star"></i>
+                        <span>
+                            <% if(listing.reviews.length > 0) { %>
+                                <% let totalRating = 0; %>
+                                <% for(review of listing.reviews) { totalRating += review.rating; } %>
+                                <%= (totalRating / listing.reviews.length).toFixed(1) %> 
+                                (<%= listing.reviews.length %> reviews)
+                            <% } else { %>
+                                No reviews yet
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Features Card -->
+                <div class="features-card">
+                    <h5><i class="fas fa-home"></i> Property Features</h5>
+                    <div class="feature-item">
+                        <i class="fas fa-bed"></i> Comfortable Bedding
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-wifi"></i> Free WiFi
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-car"></i> Parking Available
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-utensils"></i> Kitchen Access
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <% } %>
+
+
 
     <!-- Reviews Section -->
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
+    <div class="row">
+        <div class="col-12">
             <div class="review-section">
                 <% if(currUser) {%>
                 <h4 class="review-header">Share Your Experience</h4>
@@ -483,8 +990,8 @@
     </div>
 
     <!-- Map Section -->
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
+    <div class="row">
+        <div class="col-12">
             <div class="map-section">
                 <h3 class="map-title">
                     <i class="fas fa-map-marked-alt"></i> Discover the Location
@@ -495,4 +1002,109 @@
     </div>
 </div>
 
+<!-- Photo Modal -->
+<div id="photoModal" class="photo-modal">
+    <div class="modal-content-photo">
+        <span class="close-modal" onclick="closePhotoModal()">&times;</span>
+        
+        <div class="main-photo-display">
+            <img id="mainModalImg" class="main-modal-img" src="<%= listing.image.url %>" alt="Property photo">
+            <div class="photo-counter">
+                <span id="currentPhoto">1</span> / <span id="totalPhotos">8</span>
+            </div>
+        </div>
+        
+        <div class="photo-thumbnails-sidebar">
+            <div class="thumbnail-modal-item active" onclick="showPhoto(0, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 1">
+            </div>
+            <div class="thumbnail-modal-item" onclick="showPhoto(1, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 2">
+            </div>
+            <div class="thumbnail-modal-item" onclick="showPhoto(2, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 3">
+            </div>
+            <div class="thumbnail-modal-item" onclick="showPhoto(3, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 4">
+            </div>
+            <div class="thumbnail-modal-item" onclick="showPhoto(4, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 5">
+            </div>
+            <div class="thumbnail-modal-item" onclick="showPhoto(5, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 6">
+            </div>
+            <div class="thumbnail-modal-item" onclick="showPhoto(6, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 7">
+            </div>
+            <div class="thumbnail-modal-item" onclick="showPhoto(7, '<%= listing.image.url %>')">
+                <img class="thumbnail-modal-img" src="<%= listing.image.url %>" alt="Photo 8">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/js/map.js"></script>
+
+<script>
+    let currentPhotoIndex = 0;
+    
+    function openPhotoModal() {
+        document.getElementById('photoModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        showPhoto(0, '<%= listing.image.url %>');
+    }
+    
+    function closePhotoModal() {
+        document.getElementById('photoModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    function showPhoto(index, imageUrl) {
+        currentPhotoIndex = index;
+        
+        // Update main image
+        const mainImg = document.getElementById('mainModalImg');
+        mainImg.src = imageUrl;
+        
+        // Update counter
+        document.getElementById('currentPhoto').textContent = index + 1;
+        
+        // Update active thumbnail
+        const thumbnails = document.querySelectorAll('.thumbnail-modal-item');
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        thumbnails[index].classList.add('active');
+        
+        // Scroll to active thumbnail if needed
+        thumbnails[index].scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'nearest',
+            inline: 'nearest'
+        });
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(event) {
+        const modal = document.getElementById('photoModal');
+        if (modal.style.display === 'block') {
+            if (event.key === 'Escape') {
+                closePhotoModal();
+            } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                const prevIndex = currentPhotoIndex > 0 ? currentPhotoIndex - 1 : 7;
+                showPhoto(prevIndex, '<%= listing.image.url %>');
+            } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                event.preventDefault();
+                const nextIndex = currentPhotoIndex < 7 ? currentPhotoIndex + 1 : 0;
+                showPhoto(nextIndex, '<%= listing.image.url %>');
+            }
+        }
+    });
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('photoModal');
+        if (event.target === modal) {
+            closePhotoModal();
+        }
+    }
+</script>

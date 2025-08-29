@@ -6,12 +6,20 @@ module.exports.listingSchema = Joi.object({
     title: Joi.string().required(),
     description: Joi.string().required(),
     location: Joi.string().required(),
-    country: Joi.string().required(), // ✅ Add this if your form sends country
+    country: Joi.string().required(),
     price: Joi.number().required().min(0),
     image: Joi.object({
-      url: Joi.string().required(),
-      filename: Joi.string().required(),
-    }).required(),
+      url: Joi.string().allow('').optional(),
+      filename: Joi.string().allow('').optional(),
+    }).optional(),
+    imageUrl: Joi.string().uri().allow('').optional(),
+    otherImages: Joi.array().items(
+      Joi.object({
+        url: Joi.string().allow('').optional(),
+        filename: Joi.string().allow('').optional(),
+      })
+    ).optional(),
+    otherImageUrls: Joi.string().allow('').optional(),
   }).required(),
 });
 

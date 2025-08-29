@@ -43,23 +43,12 @@
     padding-right: 2rem;
   }
 
-  .tax-info {
-    display: none;
-  }
-
-  .tax-toggle {
-    border: 1px solid black;
-    border-radius: 1rem;
-    height: 3.2rem;
-    padding: 1rem ;
-    margin-left: 8rem;
-    display: flex;
-    align-items: center;
-  }
+  /* .tax-info and .tax-toggle removed */
 
 </style>
 
 <!-- Filter Icons -->
+<!-- Search box removed, now only navbar search is used -->
 <div id="filters">
   <div class="filter">
     <div><i class="fa-solid fa-fire"></i></div>
@@ -106,12 +95,7 @@
     <p>Farms</p>
   </div>
 
-  <div class="tax-toggle mb-3">
-    <div class="form-check-reverse form-switch">
-      <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-      <label class="form-check-label" for="flexSwitchCheckDefault">Display Total After Taxes</label>
-    </div>
-  </div>
+  <!-- Tax toggle removed -->
 
 </div>
 
@@ -127,7 +111,7 @@
             <p class="card-text">
               <b><%= listing.title %></b><br>
               &#8377; <%= listing.price.toLocaleString("en-IN") %> / night
-              <i class="tax-info">&nbsp;+18% GST</i>
+              <!-- Tax info removed -->
             </p>
           </div>
         </div>
@@ -137,16 +121,4 @@
 </div>
 
 
-<script>
-  let taxswitch = document.getElementById("flexSwitchCheckDefault");
-  taxswitch.addEventListener("click", () => {
-    let taxInfo = document.getElementsByClassName("tax-info");
-    for(info of taxInfo){
-      if(info.style.display != "inline"){
-        info.style.display = "inline";
-      } else {
-        info.style.display = "none"
-      }
-    } 
-  })
-</script>
+<!-- Tax toggle script removed -->
