@@ -5,11 +5,18 @@ const { listingSchema, reviewSchema} = require("./schema.js");
 
 module.exports.isLoggedIn = (req, res, next) => {
     if(!req.isAuthenticated()){
-      req.session.redirectUrl = req.originalUrl; 
-        req.flash("error","you must be logged in to create listing!");
-       return  res.redirect("/login");
+      req.session.redirectUrl = req.originalUrl;
+      // Customize message based on the route
+      if (req.path.includes('/bookings')) {
+        req.flash("error", "You must be logged in to make a booking!");
+      } else if (req.path.includes('/listings/new')) {
+        req.flash("error", "You must be logged in to create listing!");
+      } else {
+        req.flash("error", "You must be logged in first!");
       }
-      next();
+      return res.redirect("/login");
+    }
+    next();
 }
 
 module.exports.savRedirectUrl = (req, res, next) =>{

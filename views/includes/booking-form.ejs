@@ -1,0 +1,75 @@
+<!-- views/includes/booking-form.ejs -->
+<div class="booking-container">
+    <h3>Book this place</h3>
+    <form class="booking-form" action="/listings/<%= listing._id %>/bookings" method="POST">
+        <div class="dates-container">
+            <div>
+                <label for="checkIn">Check-in Date:</label>
+                <input 
+                    type="date" 
+                    id="checkIn" 
+                    name="checkIn" 
+                    class="date-input"
+                    required
+                    min="<%= new Date().toISOString().split('T')[0] %>"
+                >
+            </div>
+            <div>
+                <label for="checkOut">Check-out Date:</label>
+                <input 
+                    type="date" 
+                    id="checkOut" 
+                    name="checkOut" 
+                    class="date-input"
+                    required
+                    min="<%= new Date().toISOString().split('T')[0] %>"
+                >
+            </div>
+        </div>
+        <div class="price-details">
+            <div class="price-row">
+                <span>₹<%= listing.price %> × <span id="numberOfNights">0</span> nights</span>
+                <span id="subtotal">₹0</span>
+            </div>
+            <div class="price-row total-price">
+                <span>Total</span>
+                <span id="total">₹0</span>
+            </div>
+        </div>
+        <button class="book-btn">Book Now</button>
+    </form>
+</div>
+
+<script>
+    const checkInInput = document.getElementById('checkIn');
+    const checkOutInput = document.getElementById('checkOut');
+    const numberOfNightsSpan = document.getElementById('numberOfNights');
+    const subtotalSpan = document.getElementById('subtotal');
+    const totalSpan = document.getElementById('total');
+    const pricePerNight = <%= listing.price %>;
+
+    function updatePrice() {
+        const checkIn = new Date(checkInInput.value);
+        const checkOut = new Date(checkOutInput.value);
+        
+        if (checkIn && checkOut && checkOut > checkIn) {
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+            const total = nights * pricePerNight;
+            
+            numberOfNightsSpan.textContent = nights;
+            subtotalSpan.textContent = `₹${total}`;
+            totalSpan.textContent = `₹${total}`;
+        } else {
+            numberOfNightsSpan.textContent = '0';
+            subtotalSpan.textContent = '₹0';
+            totalSpan.textContent = '₹0';
+        }
+    }
+
+    checkInInput.addEventListener('change', () => {
+        checkOutInput.min = checkInInput.value;
+        updatePrice();
+    });
+
+    checkOutInput.addEventListener('change', updatePrice);
+</script>

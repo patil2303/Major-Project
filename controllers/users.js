@@ -14,7 +14,7 @@ module.exports.signup = async (req, res, next) => {
                 return next(err);
             }
             console.log("User signed up and logged in:", req.user); // ✅ Added line
-            req.flash("success", "Welcome to Wanderlust");
+            req.flash("success", "Welcome to Homigo");
             res.redirect("/listings");
         });
     } catch (e) {
@@ -29,7 +29,7 @@ module.exports.renderLoginForm = (req, res) => {
 
 module.exports.login = async (req, res) => {
     console.log("User logged in:", req.user); // ✅ Added line
-    req.flash("success", "Welcome back to Wanderlust!");
+    req.flash("success", "Welcome back to Homigo!");
     const redirectUrl = res.locals.redirectUrl || "/listings";
     res.redirect(redirectUrl);
 }

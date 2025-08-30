@@ -10,7 +10,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-      folder: 'wonderlust_DEV',
+  folder: 'homigo_DEV',
       allowedFormat: ["png", "jpg", "jpeg"], // supports promises as well
     },
   });

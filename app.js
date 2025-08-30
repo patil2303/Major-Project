@@ -7,7 +7,7 @@ const app = express();
 const mongoose = require("mongoose");
 const path = require("path");
 const methodOverride = require("method-override");
-// const Mongo_Url = "mongodb://127.0.0.1:27017/wonderlust";
+// const Mongo_Url = "mongodb://127.0.0.1:27017/homigo";
 const ejsMate = require("ejs-mate")
 const ExpressError = require("./utils/ExpressError.js")
 const session = require("express-session");
@@ -18,22 +18,44 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
 const listingRouter = require("./routes/listing.js");
+const bookingRouter = require("./routes/booking.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+const bookingsRootRouter = require("./routes/bookingsRoot.js");
 
+// Primary DB (Atlas). Fallback to local MongoDB when SRV/DNS fails or env not set.
 const dbUrl = process.env.ATLASDB_URL;
+const localDb = "mongodb://127.0.0.1:27017/homigo";
 
-main()
-.then(() => {
-    console.log("connected to database");
-})
-.catch((err) => {
-    console.log(err);
-})
-
-async function main() {
-    await mongoose.connect(dbUrl);
+async function connectWithFallback() {
+    if (dbUrl) {
+        try {
+            await mongoose.connect(dbUrl, { family: 4 }); // force IPv4 to avoid some DNS issues on Windows
+            console.log("Connected to Atlas DB");
+            return;
+        } catch (err) {
+            console.error("Atlas connection error:", err && err.message ? err.message : err);
+            console.warn("Falling back to local MongoDB...");
+        }
+    } else {
+        console.warn("ATLASDB_URL not set. Using local MongoDB.");
+    }
+    // Fallback
+    try {
+        await mongoose.connect(localDb);
+        console.log("Connected to local MongoDB");
+    } catch (err) {
+        console.error("Failed to connect to any MongoDB instance:", err);
+        throw err; // rethrow so process notices the failure
+    }
 }
+
+// Connect now (will be awaited before creating session store)
+connectWithFallback().catch(err => {
+    // let the process crash with a clear error; nodemon will restart after changes
+    console.error("Exiting due to DB connection error.");
+    process.exit(1);
+});
 
 app.set("view engine" , "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -44,22 +66,11 @@ app.use(express.static(path.join(__dirname,"/public")));
 
 console.log("ATLASDB_URL is:", dbUrl);
 
-const store = MongoStore.create({
-    mongoUrl: dbUrl,
-    crypto: {
-        secret: process.env.SECRET,
-    },
-    touchAfter: 24 * 3600,
-});
 
-store.on("error", (err) => {
-    console.log("ERROR in MONGO SESSION STORE", err);
-});
-
-
+// Create session store after mongoose connection is ready. Use same db as connected.
 const sessionOptions = {
-    store,
-    secret: process.env.SECRET,
+    // store will be attached once mongoose connection is ready
+    secret: process.env.SECRET || "thisshouldbeabettersecret",
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -69,11 +80,28 @@ const sessionOptions = {
     }
 };
 
+// After mongoose connects, create the session store that uses the connected DB.
+mongoose.connection.once('open', () => {
+    const effectiveMongoUrl = mongoose.connection.client.s.url || dbUrl || localDb;
+    const store = MongoStore.create({
+        mongoUrl: effectiveMongoUrl,
+        crypto: {
+            secret: process.env.SECRET,
+        },
+        touchAfter: 24 * 3600,
+    });
 
-// Redirect root URL to /listings
-app.get("/", (req, res) => {
-    res.redirect("/listings");
+    store.on("error", (err) => {
+        console.error("ERROR in MONGO SESSION STORE", err);
+    });
+
+    // attach the store to the session options
+    sessionOptions.store = store;
 });
+
+// app.get("/" ,(req,res) => {
+//     res.send("Hello , I am root");
+//  });
 
 
 app.use(session(sessionOptions));
@@ -105,8 +133,10 @@ app.use((req, res, next) => {
 // });
 
 app.use("/listings", listingRouter);
-app.use("/listings/:id/reviews/" ,reviewRouter);
+app.use("/listings/:id/bookings", bookingRouter);
+app.use("/listings/:id/reviews/", reviewRouter);
 app.use("/", userRouter);
+app.use("/bookings", bookingsRootRouter);
 
 
 
