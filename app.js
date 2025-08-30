@@ -133,6 +133,10 @@ app.use((req, res, next) => {
 // });
 
 app.use("/listings", listingRouter);
+// Redirect root to listings index (gallery) so the base Render URL lands on the gallery
+app.get('/', (req, res) => {
+    return res.redirect('/listings');
+});
 app.use("/listings/:id/bookings", bookingRouter);
 app.use("/listings/:id/reviews/", reviewRouter);
 app.use("/", userRouter);
