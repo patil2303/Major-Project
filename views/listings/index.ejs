@@ -1,153 +1,116 @@
 <%- layout("/layouts/boilerplate") %>
 
-<style>
-  #filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin: 1rem 0 2rem 0;
-    padding-left: 2rem; /* aligned to listings */
-    align-items: center;
-  }
+<!-- Cleaned Listings / Gallery matching reference image -->
+<div class="container-fluid listings-container py-3">
 
-  .filter {
-    text-align: center;
-    opacity: 0.7;
-  }
+  <style>
+    /* Filters row */
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem 1.6rem;
+      margin: 0.6rem 0 0.4rem 0;
+      padding-left: 1.25rem; /* align with container gutters */
+      justify-content: flex-start;
+      align-items: center;
+    }
 
-  .filter:hover {
-    opacity: 1;
-    cursor: pointer;
-}
+    /* smaller category buttons */
+    .filter {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      color: #6c757d;
+      text-decoration: none;
+      opacity: 0.97;
+      transition: transform .12s ease, color .12s ease, opacity .12s ease;
+      font-size: 0.88rem;
+      padding: 3px 5px;
+    }
 
-.listing-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-radius: 1rem;
-    overflow: hidden;
-}
+    .filter i { font-size: 1rem; margin-bottom: 4px; display: block; }
+    .filter span { display:block; font-size:0.82rem; line-height:1; }
+    .filter:hover { transform: translateY(-2px); color: #333; }
+    .filter.active-filter { color: #e74c3c; }
 
-.listing-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
+  /* Card layout to match reference - only image zoom on hover (no card lift/shadow) */
+  .listing-card { border: 0; border-radius: 12px; overflow: hidden; background: transparent; }
+  .card-image-wrap { border-radius: 12px; overflow: hidden; }
+  .card-img-top { width:100%; height:260px; object-fit:cover; display:block; transition: transform .45s ease; }
+  .card-image-wrap:hover .card-img-top { transform: scale(1.06); }
 
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
+    .listing-link { color: inherit; text-decoration: none; }
+    .card-body { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .card-title { font-size: 1rem; font-weight: 700; color: #222; }
+    .card-text { color: #333; font-size: 0.95rem; }
 
-.listing-link {
-    text-decoration: none;
-    color: inherit;
-}
+    /* Layout spacing */
+    .listings-container { padding-left: 1.25rem; padding-right: 1.25rem; }
+    @media (max-width: 992px) { .card-img-top { height:220px; } }
+    @media (max-width: 576px) { .card-img-top { height:170px; } .filter i { font-size:0.95rem; } }
+  </style>
 
-.listing-link:hover {
-    color: inherit;
-}
-  }
-
-  .filter p {
-    font-size: 0.8rem;
-    margin-top: 0.2rem; /* Reduced vertical gap */
-  }
-
-  .listing-card {
-    border-radius: 0.8rem;
-    overflow: hidden;
-    margin-bottom: 2rem;
-    transform: scale(1.03); /* Slightly increased size */
-  }
-
-  .listing-card img {
-    height: 18rem; /* Increased height */
-    object-fit: cover;
-    width: 100%;
-  }
-
-  .listings-container {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-
-  .tax-info {
-    display: none;
-  }
-
-
-</style>
-
-<!-- Filter Icons -->
-<!-- Search box removed, now only navbar search is used -->
-<div id="filters">
-  <div class="filter">
-    <div><i class="fa-solid fa-fire"></i></div>
-    <p>Trending</p>
+  <!-- Filters (aligned with grid) -->
+  <div id="filters" class="mb-2">
+    <a href="/listings?category=trending" class="filter <%= category==='trending' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-fire"></i>
+      <span>Trending</span>
+    </a>
+    <a href="/listings?category=room" class="filter <%= category==='room' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-bed"></i>
+      <span>Room</span>
+    </a>
+    <a href="/listings?category=iconic" class="filter <%= category==='iconic' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-mountain-city"></i>
+      <span>Iconic Cities</span>
+    </a>
+    <a href="/listings?category=views" class="filter <%= category==='views' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-mountain-sun"></i>
+      <span>Amazing Views</span>
+    </a>
+    <a href="/listings?category=beach" class="filter <%= category==='beach' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-umbrella-beach"></i>
+      <span>Beach</span>
+    </a>
+    <a href="/listings?category=pools" class="filter <%= category==='pools' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-person-swimming"></i>
+      <span>Amazing Pools</span>
+    </a>
+    <a href="/listings?category=cabins" class="filter <%= category==='cabins' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-house-user"></i>
+      <span>Cabins</span>
+    </a>
+    <a href="/listings?category=arctic" class="filter <%= category==='arctic' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-snowman"></i>
+      <span>Artics</span>
+    </a>
+    <a href="/listings?category=farms" class="filter <%= category==='farms' ? 'active-filter' : '' %>">
+      <i class="fa-solid fa-tractor"></i>
+      <span>Farms</span>
+    </a>
   </div>
 
-  <div class="filter">
-    <div><i class="fa-solid fa-bed"></i></div>
-    <p>Room</p>
-  </div>
-
-  <div class="filter">
-    <div><i class="fa-solid fa-mountain-city"></i></div>
-    <p>Iconic Cities</p>
-  </div>
-
-  <div class="filter">
-    <div><i class="fa-solid fa-mountain-sun"></i></div>
-    <p>Amazing Views</p>
-  </div>
-
-  <div class="filter">
-    <div><i class="fa-solid fa-umbrella-beach"></i></div>
-    <p>Beach</p>
-  </div>
-
-  <div class="filter">
-    <div><i class="fa-solid fa-person-swimming"></i></div>
-    <p>Amazing Pools</p>
-  </div>
-
-  <div class="filter">
-    <div><i class="fa-solid fa-house-user"></i></div>
-    <p>Cabins</p>
-  </div>
-
-  <div class="filter">
-    <div><i class="fa-solid fa-snowman"></i></i></div>
-    <p>Artics</p>
-  </div>
-
-  <div class="filter">
-    <div><i class="fa-solid fa-tractor"></i></i></div>
-    <p>Farms</p>
-  </div>
-
- 
-
-</div>
-
-<!-- Listings -->
-<div class="container-fluid listings-container">
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+  <!-- Grid of listings -->
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4 mt-2">
     <% for(let listing of allListings) { %>
-      <a href="/listings/<%= listing._id %>" class="listing-link">
-        <div class="card col listing-card">
-          <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image">
-          <div class="card-img-overlay"></div>
-          <div class="card-body">
-            <p class="card-text">
-              <b><%= listing.title %></b><br>
-              &#8377; <%= listing.price.toLocaleString("en-IN") %> / night
-              <i class="tax-info">&nbsp;+18% GST</i>
-            </p>
+      <div class="col">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+          <div class="card listing-card h-100" data-category="<%= listing.category || '' %>">
+            <div class="card-image-wrap">
+              <img src="<%= (listing.image && listing.image.url) ? listing.image.url : (listing.images && listing.images.length ? (listing.images[0].url ? listing.images[0].url : listing.images[0]) : '/images/placeholder.jpg') %>" class="card-img-top" alt="listing_image">
+            </div>
+            <div class="card-body">
+              <h6 class="card-title mb-1"><%= listing.title %></h6>
+              <p class="card-text mb-0">&#8377; <%= listing.price.toLocaleString("en-IN") %> <small class="text-muted">/ night</small></p>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
     <% } %>
   </div>
+
 </div>
 
 
- 
+

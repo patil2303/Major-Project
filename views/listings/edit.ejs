@@ -105,6 +105,22 @@
         <div class="invalid-feedback">Enter a Location</div>
       </div>
 
+      <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <select name="listing[category]" class="form-control">
+          <option value="">-- Select --</option>
+          <option value="trending" <%= listing.category==='trending' ? 'selected' : '' %>>Trending</option>
+          <option value="room" <%= listing.category==='room' ? 'selected' : '' %>>Room</option>
+          <option value="iconic" <%= listing.category==='iconic' ? 'selected' : '' %>>Iconic Cities</option>
+          <option value="views" <%= listing.category==='views' ? 'selected' : '' %>>Amazing Views</option>
+          <option value="beach" <%= listing.category==='beach' ? 'selected' : '' %>>Beach</option>
+          <option value="pools" <%= listing.category==='pools' ? 'selected' : '' %>>Amazing Pools</option>
+          <option value="cabins" <%= listing.category==='cabins' ? 'selected' : '' %>>Cabins</option>
+          <option value="arctic" <%= listing.category==='arctic' ? 'selected' : '' %>>Artics</option>
+          <option value="farms" <%= listing.category==='farms' ? 'selected' : '' %>>Farms</option>
+        </select>
+      </div>
+
       <button class="btn btn-dark edit-btn mt-3 mb-5">Update Listing</button>
     </form>
   </div>

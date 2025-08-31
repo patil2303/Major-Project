@@ -8,13 +8,17 @@ const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
 module.exports.index = async (req, res) => {
   let search = req.query.search || "";
+  let category = req.query.category || "";
   let filter = {};
   if (search) {
     // Case-insensitive search by location
     filter.location = { $regex: search, $options: "i" };
   }
+  if (category) {
+    filter.category = category;
+  }
   const allListings = await Listing.find(filter);
-  res.render("listings/index", { allListings, search });
+  res.render("listings/index", { allListings, search, category });
 }
 
 module.exports.renderNewform = (req, res) => {
@@ -77,7 +81,7 @@ module.exports.createListing = async (req, res, next) => {
 
   // Now, create the listing
   const newListing = new Listing({
-    ...listing,
+  ...listing,
     image: mainImage,
     otherImages,
     owner: req.user._id,
@@ -136,6 +140,10 @@ module.exports.updateListing = async (req, res) => {
   updatedListing.location = listing.location;
   updatedListing.country = listing.country;
   updatedListing.price = listing.price;
+  // Persist category if present
+  if (listing.category !== undefined) {
+    updatedListing.category = listing.category;
+  }
 
   await updatedListing.save();
   req.flash("success", "Listing Updated!");
