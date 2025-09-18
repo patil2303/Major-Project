@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 const Review = require("./reviews.js");
 const { ref } = require("joi");
 
+const ImageSchema = new Schema({
+  url: String,
+  filename: String
+});
+
 const listingSchema = new Schema({
     title: {
         type: String,
@@ -13,6 +18,7 @@ const listingSchema = new Schema({
         url: String,
         filename: String,
     },
+    otherImages: [ImageSchema],
     price: Number,
   category: String,
     location: String,
