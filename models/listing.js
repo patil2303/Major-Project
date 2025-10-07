@@ -33,6 +33,26 @@ const listingSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
+    ownerEmail: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /\S+@\S+\.\S+/.test(v);
+            },
+            message: 'Invalid email format'
+        }
+    },
+    ownerPhone: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^\+?[1-9]\d{1,14}$/.test(v);
+            },
+            message: 'Phone number must be in E.164 format (+1234567890)'
+        }
+    },
     geometry: {
         type: {
           type: String,

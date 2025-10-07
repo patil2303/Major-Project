@@ -6,8 +6,8 @@ module.exports.renderSignup =  (req, res) => {
 
 module.exports.signup = async (req, res, next) => {
     try {
-        let { username, email, password } = req.body;
-        const newUser = new User({ email, username });
+        let { username, email, password, phoneNumber } = req.body;
+        const newUser = new User({ email, username, phoneNumber });
         const registeredUser = await User.register(newUser, password);
         req.login(registeredUser, (err) => {
             if (err) {
@@ -42,4 +42,23 @@ module.exports.logout = (req, res, next) => {
         req.flash("success", "you are logged out!");
         res.redirect("/listings");
     });
+}
+
+module.exports.registerUser = async(req,res) => {
+    try {
+        let {username, email, password, phoneNumber} = req.body;
+        const newUser = new User({email, username, phoneNumber});
+        const registeredUser = await User.register(newUser, password);
+        req.login(registeredUser, (err) => {
+            if (err) {
+                return next(err);
+            }
+            console.log("User signed up and logged in:", req.user); // ✅ Added line
+            req.flash("success", "Welcome to Homigo");
+            res.redirect("/listings");
+        });
+    } catch(e) {
+        req.flash("error", e.message);
+        res.redirect("/signup");
+    }
 }

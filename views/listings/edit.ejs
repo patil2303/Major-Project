@@ -121,6 +121,16 @@
         </select>
       </div>
 
+      <div class="mb-3">
+        <label for="ownerEmail" class="form-label">Contact Email</label>
+        <input type="email" class="form-control" name="listing[ownerEmail]" value="<%= listing.ownerEmail %>" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="ownerPhone" class="form-label">Contact Phone</label>
+        <input type="tel" class="form-control" name="listing[ownerPhone]" value="<%= listing.ownerPhone %>" required>
+      </div>
+
       <button class="btn btn-dark edit-btn mt-3 mb-5">Update Listing</button>
     </form>
   </div>
