@@ -3,6 +3,10 @@ const Listing = require("../models/listing");
 const notificationService = require("../services/NotificationService");
 const ExpressError = require("../utils/ExpressError");
 const wrapAsync = require("../utils/wrapAsync");
+const { sendCancellationEmail } = require('../services/cancelEmailService');
+const transporter = require('../config/emailConfig');
+
+
 
 // Create new booking
 module.exports.createBooking = wrapAsync(async (req, res) => {
@@ -73,9 +77,78 @@ module.exports.getUserBookings = wrapAsync(async (req, res) => {
 });
 
 // Cancel booking
-module.exports.cancelBooking = wrapAsync(async (req, res) => {
+module.exports.cancelBooking = async (req, res) => {
+  try {
     const { id, bookingId } = req.params;
-    await Booking.findByIdAndUpdate(bookingId, { status: "cancelled" });
-    req.flash("success", "Booking cancelled successfully!");
-    res.redirect(`/listings/${id}`);
-});
+
+    // Populate listing and owner info
+    const booking = await Booking.findById(bookingId).populate({
+      path: "listing",
+      populate: { path: "owner" },
+    });
+
+    if (!booking) {
+      req.flash("error", "Booking not found");
+      return res.redirect("/listings");
+    }
+
+    booking.status = "cancelled";
+    await booking.save();
+
+    // ✅ Email to Owner
+    if (booking.listing && booking.listing.owner && booking.listing.owner.email) {
+      const ownerMail = {
+        from: process.env.EMAIL_USER,
+        to: booking.listing.owner.email,
+        subject: "Booking Cancelled - Homigo",
+        html: `
+          <div style="font-family: Arial; padding: 15px;">
+            <h2 style="color: #dc3545;">Booking Cancelled</h2>
+            <p>Dear ${booking.listing.owner.username},</p>
+            <p>Your listing <b>${booking.listing.title}</b> was cancelled by a guest.</p>
+            <p><b>Guest:</b> ${req.user.username}</p>
+            <p><b>Check-in:</b> ${new Date(booking.checkIn).toLocaleDateString()}</p>
+            <p><b>Check-out:</b> ${new Date(booking.checkOut).toLocaleDateString()}</p>
+            <p><b>Total:</b> ₹${booking.totalPrice}</p>
+            <br>
+            <p>Regards,<br><b>Homigo Team</b></p>
+          </div>
+        `,
+      };
+
+      await transporter.sendMail(ownerMail);
+      console.log("✅ Email sent to owner:", booking.listing.owner.email);
+    }
+
+    // ✅ Optional Email to Guest
+    if (req.user && req.user.email) {
+      const guestMail = {
+        from: process.env.EMAIL_USER,
+        to: req.user.email,
+        subject: "Your Booking has been Cancelled - Homigo",
+        html: `
+          <div style="font-family: Arial; padding: 15px;">
+            <h2 style="color: #dc3545;">Booking Cancelled</h2>
+            <p>Dear ${req.user.username},</p>
+            <p>Your booking for <b>${booking.listing.title}</b> has been cancelled successfully.</p>
+            <p><b>Check-in:</b> ${new Date(booking.checkIn).toLocaleDateString()}</p>
+            <p><b>Check-out:</b> ${new Date(booking.checkOut).toLocaleDateString()}</p>
+            <p><b>Total:</b> ₹${booking.totalPrice}</p>
+            <br>
+            <p>Regards,<br><b>Homigo Team</b></p>
+          </div>
+        `,
+      };
+
+      await transporter.sendMail(guestMail);
+      console.log("✅ Email sent to guest:", req.user.email);
+    }
+
+    req.flash("success", "Booking cancelled successfully. Owner has been notified.");
+    res.redirect("/listings");
+  } catch (err) {
+    console.error("❌ Error cancelling booking:", err);
+    req.flash("error", "Something went wrong while cancelling the booking.");
+    res.redirect("/bookings/user");
+  }
+};
