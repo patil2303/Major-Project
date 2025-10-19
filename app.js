@@ -22,6 +22,7 @@ const bookingRouter = require("./routes/booking.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingsRootRouter = require("./routes/bookingsRoot.js");
+const userRoutes = require("./routes/users");
 
 // Primary DB (Atlas). Fallback to local MongoDB when SRV/DNS fails or env not set.
 const dbUrl = process.env.ATLASDB_URL;
@@ -141,6 +142,7 @@ app.use("/listings/:id/bookings", bookingRouter);
 app.use("/listings/:id/reviews/", reviewRouter);
 app.use("/", userRouter);
 app.use("/bookings", bookingsRootRouter);
+app.use("/", userRoutes);
 
 
 

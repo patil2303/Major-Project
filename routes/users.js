@@ -1,36 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user.js");
-const wrapAsync = require("../utils/wrapAsync.js");
+const users = require("../controllers/users");
 
-// ...existing code...
+// simple auth guard - replace with your app's middleware if present
+function ensureLoggedIn(req, res, next) {
+  if (req.user) return next();
+  req.flash("error", "You must be signed in to access that page.");
+  return res.redirect("/login");
+}
 
-router.post("/signup", wrapAsync(async (req, res, next) => {
-    try {
-        console.log("Form Data Received:", req.body); // ✅ Add this line
+router.get("/profile", ensureLoggedIn, users.getProfile);
 
-        let { username, email, password, phoneNumber } = req.body;
-
-        let user = new User({
-            username,
-            email,
-            phoneNumber
-        });
-
-        let registeredUser = await User.register(user, password);
-        console.log("User created:", registeredUser);
-
-        req.login(registeredUser, (err) => {
-            if (err) return next(err);
-            req.flash("success", "Welcome to Homigo!");
-            res.redirect("/listings");
-        });
-    } catch (e) {
-        console.error("Error during signup:", e);
-        req.flash("error", e.message);
-        res.redirect("/signup");
-    }
-}));
-
-
-// ...existing code...
+module.exports = router;

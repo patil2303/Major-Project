@@ -1,4 +1,6 @@
 const User = require("../models/user")
+const Wallet = require("../models/wallet");
+const wrapAsync = require("../utils/wrapAsync");
 
 module.exports.renderSignup =  (req, res) => {
     res.render("users/signup.ejs");
@@ -62,3 +64,13 @@ module.exports.registerUser = async(req,res) => {
         res.redirect("/signup");
     }
 }
+
+module.exports.getProfile = wrapAsync(async (req, res) => {
+  if (!req.user) {
+    req.flash("error", "You must be signed in to view your profile.");
+    return res.redirect("/login");
+  }
+
+  const wallet = await Wallet.findOne({ owner: req.user._id });
+  res.render("users/profile", { user: req.user, wallet });
+});

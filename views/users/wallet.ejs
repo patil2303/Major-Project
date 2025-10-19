@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+<%- include('../includes/navbar') %>
+
+<div class="container mt-4">
+  <% if (locals.error) { %>
+    <div class="alert alert-danger"><%= locals.error %></div>
+  <% } %>
+  <% if (locals.success) { %>
+    <div class="alert alert-success"><%= locals.success %></div>
+  <% } %>
+  <% if (locals.info) { %>
+    <div class="alert alert-info"><%= locals.info %></div>
+  <% } %>
+
+  <h2>Your Wallet</h2>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h4>Total Coins: <%= wallet && wallet.coins ? wallet.coins : 0 %></h4>
+      <p>
+        <form action="/wallet/withdraw" method="POST" style="display:inline-block;">
+          <button class="btn btn-outline-primary btn-sm" type="submit">Withdraw (coming soon)</button>
+        </form>
+      </p>
+    </div>
+  </div>
+
+  <h4>Transaction History</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th class="text-right">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (wallet && wallet.transactions && wallet.transactions.length) { %>
+        <% wallet.transactions.slice().reverse().forEach(function(tx) { %>
+          <tr>
+            <td><%= new Date(tx.date).toLocaleString() %></td>
+            <td><%= tx.type %></td>
+            <td><%= tx.description %></td>
+            <td class="text-right">₹<%= tx.amount %></td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr>
+          <td colspan="4">No transactions yet.</td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/footer') %>
