@@ -66,9 +66,7 @@ CLOUD_NAME=your_cloudinary_name
 CLOUD_API_KEY=your_cloudinary_api_key
 CLOUD_API_SECRET=your_cloudinary_secret
 SECRET=your_secret_key
-📸 Screenshots
 
-Add your project screenshots here.
 
 🎯 Future Improvements
 Online Booking System
