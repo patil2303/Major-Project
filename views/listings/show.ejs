@@ -780,7 +780,8 @@
 </style>
 
 <script>
-    const mapToken = "<%= process.env.MAP_TOKEN %>";
+    const googleMapsApiKey = "<%= process.env.GOOGLE_MAPS_API_KEY || '' %>";
+    const mapToken = "<%= process.env.MAP_TOKEN || '' %>";
     const listing = <%- JSON.stringify(listing) %>;
     const galleryImages = <%- JSON.stringify(galleryImages || []) %>;
 </script>

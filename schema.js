@@ -20,7 +20,9 @@ module.exports.listingSchema = Joi.object({
       })
     ).optional(),
     otherImageUrls: Joi.string().allow('').optional(),
-  category: Joi.string().valid('trending','room','iconic','views','beach','pools','cabins','arctic','farms').allow('').optional(),
+    category: Joi.string().valid('trending','room','iconic','views','beach','pools','cabins','arctic','farms').allow('').optional(),
+    ownerEmail: Joi.string().email().allow('').optional(),
+    ownerPhone: Joi.string().allow('').optional(),
   }).required(),
 });
 

@@ -1,8 +1,58 @@
-const { response } = require("express");
 const Listing = require("../models/listing");
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+
+async function geocodeAddress(address) {
+    const defaultCoords = [77.2090, 28.6139];
+    if (!address || typeof address !== 'string') {
+        return { type: "Point", coordinates: defaultCoords };
+    }
+
+    const googleKey = process.env.GOOGLE_MAPS_API_KEY;
+
+    // 1. Try Google Maps Geocoding API
+    if (googleKey && googleKey.trim()) {
+        try {
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleKey.trim()}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.status === "OK" && data.results && data.results[0] && data.results[0].geometry) {
+                const { lat, lng } = data.results[0].geometry.location;
+                return { type: "Point", coordinates: [lng, lat] };
+            }
+        } catch (err) {
+            console.warn("Google geocoding error:", err.message);
+        }
+    }
+
+    // 2. Try OpenStreetMap Nominatim as fallback
+    try {
+        const osmUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        const res = await fetch(osmUrl, {
+            headers: { 'User-Agent': 'HomigoPropertyApp/1.0' }
+        });
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].lat && data[0].lon) {
+            return {
+                type: "Point",
+                coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)]
+            };
+        }
+    } catch (err) {
+        console.warn("OSM geocoding fallback notice:", err.message);
+    }
+
+    return { type: "Point", coordinates: defaultCoords };
+}
+
+function getFileUrl(file) {
+    if (!file) return '';
+    if (file.path && (file.path.startsWith('http://') || file.path.startsWith('https://'))) {
+        return file.path;
+    }
+    if (file.secure_url) return file.secure_url;
+    if (file.url) return file.url;
+    if (file.filename) return '/uploads/' + file.filename;
+    return file.path || '';
+}
 
 
 
@@ -59,10 +109,7 @@ module.exports.showListing = async (req, res) => {
 }
 
 module.exports.createListing = async (req, res, next) => {
-  let response = await geocodingClient.forwardGeocode({
-    query: req.body.listing.location,
-    limit: 1
-  }).send();
+  let geometry = await geocodeAddress(req.body.listing.location);
 
   let { listing } = req.body;
 
@@ -75,14 +122,14 @@ module.exports.createListing = async (req, res, next) => {
 
   if (req.files && req.files.length > 0) {
     const first = req.files[0];
-    mainImage.url = first.path || first.location || first.secure_url || first.url;
-    mainImage.filename = first.filename;
+    mainImage.url = getFileUrl(first);
+    mainImage.filename = first.filename || 'uploaded-image';
     if (req.files.length > 1) {
-      otherImages = req.files.slice(1).map(f => ({ url: f.path || f.location || f.secure_url || f.url, filename: f.filename }));
+      otherImages = req.files.slice(1).map(f => ({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' }));
     }
   } else if (req.file) {
-    mainImage.url = req.file.path || req.file.location || req.file.secure_url || req.file.url;
-    mainImage.filename = req.file.filename;
+    mainImage.url = getFileUrl(req.file);
+    mainImage.filename = req.file.filename || 'uploaded-image';
   } else if (listing.imageUrl) {
     mainImage.url = listing.imageUrl;
     mainImage.filename = '';
@@ -109,13 +156,18 @@ module.exports.createListing = async (req, res, next) => {
   });
   otherImages = unique.slice(0, 5); // limit if desired
 
+  const ownerEmail = (listing.ownerEmail && listing.ownerEmail.trim()) || (req.user && req.user.email) || "host@homigo.com";
+  const ownerPhone = (listing.ownerPhone && listing.ownerPhone.trim()) || (req.user && req.user.phoneNumber) || "+919999999999";
+
   // Now create and save
   const newListing = new Listing({
     ...listing,
+    ownerEmail,
+    ownerPhone,
     image: mainImage,
     otherImages,
     owner: req.user._id,
-    geometry: response.body.features[0].geometry
+    geometry
   });
 
   await newListing.save();
@@ -145,11 +197,11 @@ module.exports.updateListing = async (req, res) => {
   // Handle uploaded files: first file => main image, rest append to otherImages
   if (req.files && req.files.length > 0) {
     const first = req.files[0];
-    updatedListing.image = { url: first.path || first.location || first.secure_url || first.url, filename: first.filename };
-    const newOtherFromFiles = req.files.slice(1).map(f => ({ url: f.path || f.location || f.secure_url || f.url, filename: f.filename }));
+    updatedListing.image = { url: getFileUrl(first), filename: first.filename || 'uploaded-image' };
+    const newOtherFromFiles = req.files.slice(1).map(f => ({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' }));
     updatedListing.otherImages = (updatedListing.otherImages || []).concat(newOtherFromFiles);
   } else if (req.file) {
-    updatedListing.image = { url: req.file.path || req.file.location || req.file.secure_url || req.file.url, filename: req.file.filename };
+    updatedListing.image = { url: getFileUrl(req.file), filename: req.file.filename || 'uploaded-image' };
   } else if (listing.imageUrl) {
     updatedListing.image = { url: listing.imageUrl, filename: '' };
   }
@@ -181,10 +233,15 @@ module.exports.updateListing = async (req, res) => {
   // Update other scalar fields
   updatedListing.title = listing.title;
   updatedListing.description = listing.description;
-  updatedListing.location = listing.location;
+  if (listing.location && listing.location !== updatedListing.location) {
+    updatedListing.geometry = await geocodeAddress(listing.location);
+    updatedListing.location = listing.location;
+  }
   updatedListing.country = listing.country;
   updatedListing.price = listing.price;
   if (listing.category !== undefined) updatedListing.category = listing.category;
+  if (listing.ownerEmail) updatedListing.ownerEmail = listing.ownerEmail;
+  if (listing.ownerPhone) updatedListing.ownerPhone = listing.ownerPhone;
 
   await updatedListing.save();
   req.flash("success", "Listing Updated!");

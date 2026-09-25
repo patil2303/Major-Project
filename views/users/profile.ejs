@@ -1,8 +1,4 @@
-<!-- Add Bootstrap & Font Awesome so navbar renders correctly (inserted before navbar include) -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-<%- include('../includes/navbar') %>
+<% layout("/layouts/boilerplate") %>
 
 <% 
   var u = (typeof user !== 'undefined' && user) ? user : (typeof currUser !== 'undefined' ? currUser : null);
@@ -164,5 +160,4 @@
   <% } %>
 </div>
 
-<!-- Optional: load Bootstrap JS bundle for collapse behavior (inserted at end of file) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+

@@ -55,16 +55,20 @@ class NotificationService {
     }
 
     async sendEmail(booking, listing, user) {
+        if (!this.emailTransporter) {
+            console.log('ℹ️ Email notifications skipped (EMAIL_USER not configured in .env)');
+            return true;
+        }
         return this.emailTransporter.sendMail({
             from: process.env.EMAIL_USER,
-            to: listing.ownerEmail,
+            to: listing.ownerEmail || 'host@homigo.com',
             subject: `New Booking for ${listing.title || 'your property'}`,
             html: `
                 <h2>New Booking Details</h2>
                 <p>Guest: ${user.username}</p>
-                <p>Check-in: ${booking.checkIn.toLocaleDateString()}</p>
-                <p>Check-out: ${booking.checkOut.toLocaleDateString()}</p>
-                <p>Total Price: $${booking.totalPrice}</p>
+                <p>Check-in: ${booking.checkIn ? new Date(booking.checkIn).toLocaleDateString() : 'N/A'}</p>
+                <p>Check-out: ${booking.checkOut ? new Date(booking.checkOut).toLocaleDateString() : 'N/A'}</p>
+                <p>Total Price: ₹${booking.totalPrice}</p>
                 <p>Property: ${listing.title || 'Not specified'}</p>
                 <p>Location: ${listing.location || 'Not specified'}</p>
             `
