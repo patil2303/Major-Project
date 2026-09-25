@@ -1,32 +1,65 @@
-<% layout("/layouts/boilerplate") %>
+<%- layout("/layouts/boilerplate") %>
 
-<div class="row mt-3">
-    <h1 class="col-6 offset-3">Login</h1>
-    <div class="col-6 offset-3">
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      
+      <!-- Glossy Glass Login Card -->
+      <div class="glass-form-card shadow-lg">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <div class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 56px; height: 56px; font-size: 1.5rem;">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          </div>
+          <h2 class="h4 fw-bold text-dark mb-1">Welcome Back to Homigo</h2>
+          <p class="text-muted small">Log in to manage your bookings and saved stays</p>
+        </div>
+
+        <!-- Quick Demo Credentials Banner -->
+        <div class="p-3 rounded-3 mb-4 bg-light-subtle border d-flex align-items-center justify-content-between">
+          <div>
+            <div class="fw-bold small text-dark"><i class="fa-solid fa-key text-warning me-1"></i> Demo Host Account</div>
+            <div class="text-muted" style="font-size: 0.75rem;">Username: <code>homigo_host</code> | Pass: <code>admin123</code></div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1 small" onclick="document.getElementById('username').value='homigo_host'; document.getElementById('password').value='admin123';">
+            Auto-fill
+          </button>
+        </div>
+
+        <!-- Form -->
         <form action="/login" method="POST" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input
-                  name="username"
-                  id="username"
-                  type="text"
-                  class="form-control"
-                  required
-                >
-              </div>
+          <div class="mb-3">
+            <label for="username" class="form-label-custom">Username</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-user"></i></span>
+              <input name="username" id="username" type="text" class="form-control glass-input border-start-0 ps-0" placeholder="Enter username" required>
+            </div>
+            <div class="invalid-feedback">Please enter your username.</div>
+          </div>
 
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label for="password" class="form-label-custom mb-0">Password</label>
+              <a href="#" class="text-danger small text-decoration-none" onclick="alert('Demo host password is: admin123'); return false;">Forgot?</a>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+              <input name="password" id="password" type="password" class="form-control glass-input border-start-0 ps-0" placeholder="Enter password" required>
+            </div>
+            <div class="invalid-feedback">Please enter your password.</div>
+          </div>
 
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input
-                  name="password"
-                  id="password"
-                  type="password"
-                  class="form-control"
-                  required
-                >
-              </div>
-              <button class="btn btn-success">Login</button>
+          <button type="submit" class="btn-brand-solid w-100 justify-content-center py-2 fs-6 mb-3">
+            <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Log In
+          </button>
         </form>
+
+        <!-- Footer link -->
+        <div class="text-center pt-3 border-top text-muted small">
+          Don't have an account yet? <a href="/signup" class="text-danger fw-semibold text-decoration-none">Sign Up</a>
+        </div>
+      </div>
+
     </div>
+  </div>
 </div>

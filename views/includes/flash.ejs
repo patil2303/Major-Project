@@ -1,24 +1,23 @@
-<% if(success && success.length) { %>
-    <div class="alert alert-success alert-dismissible fade show col-6 offset-3"  role="alert">
-        <%= success %>
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close">
-        </button>
+<% if (success && success.length) { %>
+  <div class="flash-toast flash-success mb-3 alert alert-dismissible fade show" role="alert">
+    <div class="d-flex align-items-center gap-2">
+      <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <span class="fw-medium text-dark"><%= success %></span>
     </div>
+    <button type="button" class="btn-close ms-auto shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
 <% } %>
 
-
-<% if(error && error.length) { %>
-    <div class="alert alert-danger alert-dismissible fade show col-6 offset-3"  role="alert">
-        <%= error %>
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close">
-        </button>
+<% if (error && error.length) { %>
+  <div class="flash-toast flash-error mb-3 alert alert-dismissible fade show" role="alert">
+    <div class="d-flex align-items-center gap-2">
+      <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <span class="fw-medium text-dark"><%= error %></span>
     </div>
+    <button type="button" class="btn-close ms-auto shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
 <% } %>

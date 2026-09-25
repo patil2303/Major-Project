@@ -1,128 +1,113 @@
-<% layout("/layouts/boilerplate") %>
-<div class="row mt-3">
-  <div class="col-8 offset-2">
-    <h3>Create a New Listing</h3>
-    <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+<%- layout("/layouts/boilerplate") %>
 
-      <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input
-          name="listing[title]"
-          placeholder="Enter Title"
-          type="text"
-          class="form-control"
-          required
-        >
-        <div class="valid-feedback">Title Looks Good</div>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      
+      <!-- Modern Glass Listing Creation Form -->
+      <div class="glass-form-card shadow-lg">
+        <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+          <div class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            <i class="fa-solid fa-house-chimney-medical"></i>
+          </div>
+          <div>
+            <h2 class="h4 fw-bold text-dark mb-0">Host a New Stay in India</h2>
+            <p class="text-muted small mb-0">List your property on Homigo and welcome guests from around the globe</p>
+          </div>
+        </div>
+
+        <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+
+          <!-- Section 1: Property Details -->
+          <div class="mb-4">
+            <h5 class="h6 fw-bold text-dark mb-3"><i class="fa-solid fa-circle-info text-danger me-2"></i>General Information</h5>
+            
+            <div class="mb-3">
+              <label for="title" class="form-label-custom">Listing Title</label>
+              <input name="listing[title]" id="title" placeholder="e.g. Royal Heritage Haveli with Private Courtyard" type="text" class="form-control glass-input" required>
+              <div class="invalid-feedback">Please enter an attractive property title.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label-custom">Description</label>
+              <textarea name="listing[description]" id="description" rows="4" class="form-control glass-input" placeholder="Describe the ambiance, surrounding landscape, amenities, and unique heritage of your stay..." required></textarea>
+              <div class="invalid-feedback">Please provide a detailed description.</div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="category" class="form-label-custom">Primary Category</label>
+                <select class="form-select glass-input" name="listing[category]" id="category" required>
+                  <option value="iconic">Iconic / Heritage Palace</option>
+                  <option value="trending">Trending & Modern</option>
+                  <option value="beach">Beach & Coastal</option>
+                  <option value="cabins">Mountain & Pine Cabin</option>
+                  <option value="pools">Luxury Villa with Pool</option>
+                  <option value="farms">Tea & Coffee Plantation</option>
+                  <option value="views">Spectacular Mountain Views</option>
+                  <option value="room">Boutique Room / Suite</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="price" class="form-label-custom">Nightly Price (₹ INR)</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted">₹</span>
+                  <input name="listing[price]" id="price" type="number" class="form-control glass-input border-start-0 ps-0" placeholder="e.g. 5500" required min="500">
+                </div>
+                <div class="invalid-feedback">Enter a valid nightly rate.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Photos -->
+          <div class="mb-4">
+            <h5 class="h6 fw-bold text-dark mb-3"><i class="fa-solid fa-camera text-danger me-2"></i>Property Photographs</h5>
+            
+            <div class="mb-3">
+              <label for="image" class="form-label-custom">Primary Cover Photo</label>
+              <input name="listing[image]" id="image" type="file" class="form-control glass-input mb-2" accept="image/*">
+              <input name="listing[imageUrl]" type="url" class="form-control glass-input" placeholder="Or paste an image URL (e.g. Unsplash / CDN link)">
+              <small class="form-text text-muted">Upload a file or paste a high-resolution photo URL.</small>
+            </div>
+
+            <div class="mb-3">
+              <label for="otherImages" class="form-label-custom">Additional Gallery Photos (Up to 4)</label>
+              <input name="listing[otherImages]" id="otherImages" type="file" class="form-control glass-input mb-2" multiple accept="image/*">
+              <input name="listing[otherImageUrls]" type="text" class="form-control glass-input" placeholder="Or paste multiple image URLs separated by commas">
+              <small class="form-text text-muted">Provide additional interior, bedroom, or landscape photos.</small>
+            </div>
+          </div>
+
+          <!-- Section 3: Location -->
+          <div class="mb-4">
+            <h5 class="h6 fw-bold text-dark mb-3"><i class="fa-solid fa-location-dot text-danger me-2"></i>Location & Geography</h5>
+            
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label for="location" class="form-label-custom">City & State / Region</label>
+                <input name="listing[location]" id="location" placeholder="e.g. Jaipur, Rajasthan or Calangute, Goa" type="text" class="form-control glass-input" required>
+                <div class="invalid-feedback">Please enter the location city and state.</div>
+              </div>
+
+              <div class="col-md-5">
+                <label for="country" class="form-label-custom">Country</label>
+                <input name="listing[country]" id="country" value="India" type="text" class="form-control glass-input" required>
+                <div class="invalid-feedback">Please enter country name.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="/listings" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+            <button type="submit" class="btn-brand-solid px-5">
+              <i class="fa-solid fa-cloud-arrow-up me-1"></i> Publish Stay
+            </button>
+          </div>
+
+        </form>
       </div>
 
-      <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea
-          name="listing[description]"
-          class="form-control"
-          type="text"
-          required
-        ></textarea>
-        <div class="invalid-feedback">Please enter a short description</div>
-      </div>
-
-
-      <div class="mb-3">
-        <label for="image" class="form-label">Main Photo</label>
-        <input
-          name="listing[image]"
-          type="file"
-          class="form-control mb-2"
-        >
-        <input
-          name="listing[imageUrl]"
-          type="url"
-          class="form-control"
-          placeholder="Or paste an image URL"
-        >
-        <small class="form-text text-muted">Upload a file or paste an image URL for the main photo.</small>
-      </div>
-
-      <div class="mb-3">
-        <label for="otherImages" class="form-label">Other Photos (up to 5)</label>
-        <input
-          name="listing[otherImages]"
-          type="file"
-          class="form-control mb-2"
-          multiple
-          accept="image/*"
-          onchange="if(this.files.length>5){alert('You can only upload up to 5 images.'); this.value='';}"
-        >
-        <input
-          name="listing[otherImageUrls]"
-          type="text"
-          class="form-control"
-          placeholder="Paste up to 5 image URLs, separated by commas"
-        >
-        <small class="form-text text-muted">Upload files or paste image URLs (comma separated) for additional photos.</small>
-      </div>
-
-      <div class="mb-3">
-        <label for="price" class="form-label">Price</label>
-        <input
-          name="listing[price]"
-          placeholder="Enter Price"
-          class="form-control"
-          required
-        >
-        <div class="invalid-feedback">Enter a valid price</div>
-      </div>
-
-      <div class="mb-3">
-        <label for="country" class="form-label">Country</label>
-        <input
-          name="listing[country]"
-          placeholder="Enter country"
-          type="text"
-          class="form-control"
-          required
-        >
-        <div class="invalid-feedback">Enter a valid Country name</div>
-      </div>
-
-      <div class="mb-3">
-        <label for="category" class="form-label">Category</label>
-        <select name="listing[category]" class="form-control">
-          <option value="">-- Select --</option>
-          <option value="trending">Trending</option>
-          <option value="room">Room</option>
-          <option value="iconic">Iconic Cities</option>
-          <option value="views">Amazing Views</option>
-          <option value="beach">Beach</option>
-          <option value="pools">Amazing Pools</option>
-          <option value="farms">Villas</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="location" class="form-label">Location</label>
-        <input
-          name="listing[location]"
-          placeholder="Enter location"
-          type="text"
-          class="form-control"
-          required
-        >
-        <div class="invalid-feedback">Enter a Location</div>
-      </div>
-
-      <div class="mb-3">
-        <label for="ownerEmail" class="form-label">Contact Email</label>
-        <input type="email" class="form-control" name="listing[ownerEmail]" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="ownerPhone" class="form-label">Contact Phone</label>
-        <input type="tel" class="form-control" name="listing[ownerPhone]" required>
-      </div>
-
-      <button class="btn btn-dark mt-3 add-btn">Add</button>
-    </form>
+    </div>
   </div>
 </div>

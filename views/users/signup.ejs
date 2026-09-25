@@ -1,55 +1,69 @@
-<% layout("/layouts/boilerplate") %>
+<%- layout("/layouts/boilerplate") %>
 
-<div class="row mt-3">
-  <h1 class="col-6 offset-3">SignUp on Homigo</h1>
-    <div class="col-6 offset-3">
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      
+      <!-- Glossy Glass Signup Card -->
+      <div class="glass-form-card shadow-lg">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <div class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 56px; height: 56px; font-size: 1.5rem;">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h2 class="h4 fw-bold text-dark mb-1">Create Your Homigo Account</h2>
+          <p class="text-muted small">Join thousands of travelers experiencing authentic Indian stays</p>
+        </div>
+
+        <!-- Form -->
         <form action="/signup" method="POST" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input
-                  name="username"
-                  id="username"
-                  type="text"
-                  class="form-control"
-                  required
-                >
-                <div class="valid-feedback">Looks Good</div>
-              </div>
+          <div class="mb-3">
+            <label for="username" class="form-label-custom">Username</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-user"></i></span>
+              <input name="username" id="username" type="text" class="form-control glass-input border-start-0 ps-0" placeholder="Choose a username" required>
+            </div>
+            <div class="invalid-feedback">Please choose a valid username.</div>
+          </div>
 
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input
-                  name="email"
-                  id="email"
-                  type="email"
-                  class="form-control"
-                  required
-                >
-              </div>
+          <div class="mb-3">
+            <label for="email" class="form-label-custom">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
+              <input name="email" id="email" type="email" class="form-control glass-input border-start-0 ps-0" placeholder="yourname@domain.com" required>
+            </div>
+            <div class="invalid-feedback">Please enter a valid email.</div>
+          </div>
 
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input
-                  name="password"
-                  id="password"
-                  type="password"
-                  class="form-control"
-                  required
-                >
-              </div>
+          <div class="mb-3">
+            <label for="phoneNumber" class="form-label-custom">Phone Number (India)</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-phone"></i></span>
+              <input name="phoneNumber" id="phoneNumber" type="tel" class="form-control glass-input border-start-0 ps-0" placeholder="+91 98765 43210" required>
+            </div>
+            <div class="invalid-feedback">Please provide your mobile number.</div>
+          </div>
 
-              <div class="mb-3">
-                <label class="form-label" for="phoneNumber">Phone Number</label>
-                <input 
-                    class="form-control"
-                    type="tel"
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    required
-                    placeholder="Enter your phone number"
-                >
-              </div>
-              <button class="btn btn-success">signUp</button>
+          <div class="mb-4">
+            <label for="password" class="form-label-custom">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+              <input name="password" id="password" type="password" class="form-control glass-input border-start-0 ps-0" placeholder="Create a secure password" required minlength="6">
+            </div>
+            <div class="invalid-feedback">Password must be at least 6 characters.</div>
+          </div>
+
+          <button type="submit" class="btn-brand-solid w-100 justify-content-center py-2 fs-6 mb-3">
+            <i class="fa-solid fa-arrow-right me-1"></i> Create Account
+          </button>
         </form>
+
+        <!-- Footer link -->
+        <div class="text-center pt-3 border-top text-muted small">
+          Already have an account? <a href="/login" class="text-danger fw-semibold text-decoration-none">Log In</a>
+        </div>
+      </div>
+
     </div>
+  </div>
 </div>

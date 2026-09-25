@@ -1,1208 +1,349 @@
-<% layout("/layouts/boilerplate") %>
+<%- layout("/layouts/boilerplate") %>
 
-<style>
-    .listing-hero {
-        background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
-        padding: 3rem 0;
-        margin-bottom: 3rem;
-        border-radius: 0 0 2rem 2rem;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .listing-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox=222I"0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="0%" r="100%"><stop offset="0%" stop-color="white" stop-opacity="0.1"/><stop offset="100%" stop-color="white" stop-opacity="0.05"/></radialGradient></defs><rect width="100" height="20" fill="url(%23a)"/>') repeat-x;
-        opacity: 0.3;
-    }
-    
-    .listing-title {
-        color: white;
-        font-size: 3rem;
-        font-weight: 800;
-        text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-        margin-bottom: 0.5rem;
-        letter-spacing: -1px;
-        position: relative;
-        z-index: 2;
-    }
-    
-    .listing-subtitle {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1.2rem;
-        font-weight: 300;
-        text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
-        margin-bottom: 0;
-        position: relative;
-        z-index: 2;
-    }
-    
-    /* Photo Gallery Styles */
-
-    .photo-gallery-section {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 2rem;
-    }
-
-    /* Booking Form Styles */
-    .sticky-booking {
-        
-        position: sticky;
-        top: 2rem;
-        margin-bottom: 3rem;
-        border-radius: 2rem;
-        overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        min-height: 500px;
-        background: #fff;
-        align-items: stretch;
-    }
-
-    .main-photo {
-        position: relative;
-        overflow: hidden;
-        background: #f8f9fa;
-        border-radius: 2rem;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 2rem;
-        box-sizing: border-box;
-    }
-
-    .photo-overlay {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-
-    .main-gallery-img {
-        width: 100%;
-        height: 100%;
-        max-height: 400px;
-        object-fit: cover;
-        border-radius: 1.5rem;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease;
-        display: block;
-    }
-
-    .main-photo:hover .main-gallery-img {
-        transform: scale(1.05);
-    }
-    
-    .photo-overlay {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        z-index: 10;
-    }
-    
-    .view-all-photos-btn {
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.25rem;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
-    
-    .view-all-photos-btn:hover {
-        background: rgba(0, 0, 0, 0.9);
-        transform: translateY(-2px);
-        color: white;
-    }
-    
-
-    .thumbnail-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-        gap: 1rem;
-        padding: 1rem;
-        height: 100%;
-        align-items: center;
-        justify-items: center;
-    }
-
-    .thumbnail-item {
-        position: relative;
-        overflow: hidden;
-        border-radius: 1rem;
-        aspect-ratio: 4/3;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-        width: 100%;
-        height: 100%;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        background: #f8f9fa;
-    }
-
-    .thumbnail-item:hover {
-        transform: scale(1.02);
-    }
-
-    .thumbnail-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 1rem;
-        display: block;
-    }
-    
-    .more-photos {
-        position: relative;
-    }
-    
-    .more-photos-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
-    
-    .more-photos-overlay:hover {
-        background: rgba(0, 0, 0, 0.8);
-    }
-    
-    .more-photos-overlay i {
-        margin-right: 0.5rem;
-    }
-
-    /* Photo Modal Styles */
-    .photo-modal {
-        display: none; /* default hidden; shown when aria-hidden="false" */
-        position: fixed;
-        z-index: 2000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.85);
-        align-items: center;      /* center vertically */
-        justify-content: center;  /* center horizontally */
-        padding: 2rem;
-        box-sizing: border-box;
-    }
-    .photo-modal[aria-hidden="false"] {
-        display: flex;
-        pointer-events: auto;
-    }
-    .photo-modal[aria-hidden="true"] {
-        pointer-events: none;
-    }
-
-    /* Modal content area: max width, centered children, responsive layout */
-    .modal-content-photo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        width: 100%;
-        max-width: 1200px;
-        max-height: 90vh;
-        box-sizing: border-box;
-        padding: 1rem;
-    }
-    
-    /* main display area should take remaining space and center the image */
-    .main-photo-display {
-        flex: 1 1 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        border-radius: 1rem;
-        overflow: hidden;
-        position: relative;
-        min-width: 0; /* allow flex children to shrink properly */
-    }
-    
-    /* Ensure the shown image fits within viewport while maintaining aspect ratio */
-    .main-modal-img {
-        max-width: 75vw;    /* don't exceed viewport width */
-        max-height: 80vh;   /* don't exceed viewport height */
-        width: auto;
-        height: auto;
-        object-fit: contain;
-        display: block;
-        border-radius: 0.75rem;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-    }
-    
-    /* Thumbnails sidebar: fixed width, vertical stack, scroll if needed */
-    .photo-thumbnails-sidebar {
-        width: 120px;
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        overflow-y: auto;
-        max-height: 80vh;
-        padding-right: 0.5rem;
-        box-sizing: border-box;
-    }
-    
-    .thumbnail-modal-item {
-        width: 100%;
-        height: 72px;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: all 0.2s ease;
-        flex: 0 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #fff;
-    }
-    
-    .thumbnail-modal-item img.thumbnail-modal-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-    
-    .thumbnail-modal-item.active {
-        border-color: #ff6b6b;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-        transform: translateX(-4px);
-    }
-    
-    /* photo counter placed just below the main image, centered */
-    .photo-counter {
-        position: absolute;
-        bottom: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.6);
-        color: white;
-        padding: 0.4rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.95rem;
-        z-index: 10;
-        backdrop-filter: blur(4px);
-    }
-
-    @media (max-width: 768px) {
-        .modal-content_photo {
-            flex-direction: column;
-            padding: 1rem;
-            gap: 0.5rem;
-        }
-        
-        .main-photo-display {
-            height: 70vh;
-        }
-        
-        .photo-thumbnails-sidebar {
-            width: 100%;
-            height: 100px;
-            flex-direction: row;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding-right: 0;
-            padding-bottom: 0.5rem;
-        }
-        
-        .photo-thumbnails-sidebar::-webkit-scrollbar {
-            height: 6px;
-            width: auto;
-        }
-        
-        .thumbnail-modal-item {
-            width: 80px;
-            height: 60px;
-            flex-shrink: 0;
-        }
-        
-        .close-modal {
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 35px;
-            height: 35px;
-            font-size: 1.5rem;
-        }
-    }
-    
-    .card-body {
-        padding: 2.5rem;
-        background: white;
-    }
-    
-    .owner-info {
-        display: inline-flex;
-        align-items: center;
-        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-        color: white;
-        padding: 0.75rem 1.25rem;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 15px rgba(238, 90, 111, 0.3);
-    }
-    
-    .owner-info i {
-        margin-right: 0.5rem;
-    }
-    
-    .listing-description {
-        font-size: 1.1rem;
-        line-height: 1.7;
-        color: #555;
-        margin-bottom: 2.5rem;
-        padding: 0 0.5rem;
-    }
-    
-    .price-tag {
-        background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 1rem;
-        font-size: 1.8rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 1rem;
-        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
-        display: inline-block;
-    }
-    
-    .location-info {
-        display: flex;
-        align-items: center;
-        background: #f8f9fa;
-        padding: 1.25rem;
-        border-radius: 1rem;
-        margin-bottom: 1.5rem;
-        margin-top: 1rem;
-        border-left: 4px solid #007bff;
-    }
-    
-    .location-info i {
-        color: #007bff;
-        margin-right: 1rem;
-        font-size: 1.2rem;
-    }
-    
-    /* Sidebar Styles */
-    .sidebar-content {
-        position: sticky;
-        top: 2rem;
-    }
-    
-    .price-card {
-        background: white;
-        border-radius: 2rem;
-        padding: 2rem;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
-        border: 2px solid #f8f9fa;
-    }
-    
-    .price-tag-sidebar {
-        background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 1.5rem;
-        font-size: 2.2rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
-    }
-    
-    .price-tag-sidebar small {
-        font-size: 1rem;
-        opacity: 0.8;
-        display: block;
-        margin-top: 0.5rem;
-    }
-    
-    .btn-edit-sidebar, .btn-delete-sidebar, .btn-book {
-        width: 100%;
-        padding: 1rem;
-        border-radius: 1rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        margin-bottom: 0.5rem;
-    }
-    
-    .btn-edit-sidebar {
-        background: linear-gradient(135deg, #ff9a9e, #fecfef);
-        color: #333;
-        box-shadow: 0 8px 25px rgba(255, 154, 158, 0.3);
-    }
-    
-    .btn-edit-sidebar:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(255, 154, 158, 0.4);
-        color: #333;
-    }
-    
-    .btn-delete-sidebar {
-        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-        color: white;
-        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-    }
-    
-    .btn-delete-sidebar:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
-        color: white;
-    }
-    
-    .btn-book {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-    
-    .btn-book:hover:not(:disabled) {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-        color: white;
-    }
-    
-    .quick-facts-card, .features-card {
-        background: white;
-        border-radius: 1.5rem;
-        padding: 1.5rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        margin-bottom: 2rem;
-        border: 2px solid #f8f9fa;
-    }
-    
-    .quick-facts-card h5, .features-card h5 {
-        color: #333;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #f8f9fa;
-    }
-    
-    .fact-item, .feature-item {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem 0;
-        color: #666;
-    }
-    
-    .fact-item i, .feature-item i {
-        color: #667eea;
-        margin-right: 1rem;
-        width: 20px;
-        font-size: 1.1rem;
-    }
-    
-    @media (max-width: 992px) {
-        .sidebar-content {
-            position: static;
-            margin-top: 2rem;
-        }
-        
-        .price-tag-sidebar {
-            font-size: 1.8rem;
-        }
-    }
-    
-    .btn-modern {
-        padding: 1rem 2rem;
-        border-radius: 50px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: all 0.3s ease;
-        border: none;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-edit {
-        background: linear-gradient(135deg, #ff9a9e, #fecfef);
-        color: #333;
-        box-shadow: 0 8px 25px rgba(255, 154, 158, 0.3);
-    }
-    
-    .btn-edit:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(255, 154, 158, 0.4);
-        color: #333;
-    }
-    
-    .btn-delete {
-        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-        color: white;
-        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-    }
-    
-    .btn-delete:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
-        color: white;
-    }
-    
-    .review-section {
-        background: #f8f9fa;
-        border-radius: 2rem;
-        padding: 2rem;
-        margin: 2rem 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    }
-    
-    .review-header {
-        color: #333;
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-        text-align: center;
-        position: relative;
-    }
-    
-    .review-header::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border-radius: 2px;
-    }
-    
-    .review-form {
-        background: white;
-        padding: 2rem;
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        margin-bottom: 2rem;
-    }
-    
-    .form-control {
-        border-radius: 1rem;
-        border: 2px solid #e9ecef;
-        padding: 1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .form-control:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-    
-    .btn-submit {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        padding: 1rem 3rem;
-        border-radius: 50px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-    
-    .btn-submit:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-        color: white;
-    }
-    
-    .review-card {
-        background: white;
-        border: none;
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease;
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
-    
-    .review-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-    }
-    
-    .review-card-body {
-        padding: 1.5rem;
-    }
-    
-    .review-author {
-        color: #667eea;
-        font-weight: 600;
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .review-comment {
-        color: #666;
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-    
-    .map-section {
-        background: white;
-        border-radius: 2rem;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        margin-bottom: 2rem;
-    }
-    
-    .map-title {
-        color: #333;
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
-    
-    /* Ensure map has explicit height and stacking so it renders */
-    #map {
-        position: relative;
-        z-index: 0; /* below modal */
-        height: 400px !important;
-        width: 100%;
-        max-width: 900px;
-        margin: 0 auto;
-        display: block;
-        visibility: visible;
-    }
-
-    @media (max-width: 768px) {
-        .listing-title {
-            font-size: 2.2rem;
-        }
-        
-        .listing-subtitle {
-            font-size: 1rem;
-        }
-        
-        .action-buttons {
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .reviews-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .price-tag {
-            font-size: 1.4rem;
-        }
-    }
-
-    .listing-photos {
-        margin-top: 2rem;
-    }
-
-    .main-photo {
-        width: 100%;
-        height: 450px;
-        border-radius: 1rem;
-        overflow: hidden;
-        position: relative;
-        margin-bottom: 1rem;
-    }
-
-    .main-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .main-photo:hover img {
-        transform: scale(1.05);
-    }
-
-    .thumbnails {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .thumb {
-        flex: 1 1 calc(25% - 0.5rem);
-        cursor: pointer;
-        overflow: hidden;
-        border-radius: 0.5rem;
-        position: relative;
-    }
-
-    .thumb img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .thumb:hover img {
-        transform: scale(1.1);
-    }
-
-    @media (max-width: 768px) {
-        .main-photo {
-            height: 300px;
-        }
-
-        .thumb {
-            flex: 1 1 calc(50% - 0.5rem);
-        }
-    }
-</style>
-
+<!-- Injected script variables for Map and Gallery -->
 <script>
-    const googleMapsApiKey = "<%= process.env.GOOGLE_MAPS_API_KEY || '' %>";
-    const mapToken = "<%= process.env.MAP_TOKEN || '' %>";
-    const listing = <%- JSON.stringify(listing) %>;
-    const galleryImages = <%- JSON.stringify(galleryImages || []) %>;
+  const mapToken = "<%= process.env.MAP_TOKEN || '' %>";
+  const googleMapsApiKey = "<%= process.env.GOOGLE_MAPS_API_KEY || '' %>";
+  const listing = <%- JSON.stringify(listing) %>;
+  const galleryImages = <%- JSON.stringify(galleryImages || []) %>;
 </script>
 
-<!-- Hero Section -->
-<div class="listing-hero">
-    <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h1 class="listing-title"><%= listing.title %></h1>
-                <p class="listing-subtitle"><%= listing.location %></p>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="container-fluid px-lg-5 py-4">
 
-<div class="container">
-    <div class="row">
-        <!-- Photo Gallery Section -->
-        <div class="col-12">
-            <div class="photo-gallery-section">
-                <div class="main-photo">
-                    <img
-                      src="<%= (galleryImages && galleryImages[0] && galleryImages[0].url) ? galleryImages[0].url : '/images/no-image.png' %>"
-                      class="main-gallery-img"
-                      alt="Main listing image"
-                      onclick="openPhotoModal(); showPhoto(0)"
-                    >
-                    <div class="photo-overlay">
-                        <button class="view-all-photos-btn" onclick="openPhotoModal(); showPhoto(0)">
-                            <i class="fas fa-images"></i> View All Photos
-                        </button>
-                    </div>
-                </div>
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0 small">
+      <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Home</a></li>
+      <li class="breadcrumb-item"><a href="/listings" class="text-decoration-none text-muted">Stays</a></li>
+      <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page"><%= listing.title %></li>
+    </ol>
+  </nav>
 
-                <div class="thumbnail-grid">
-                    <% if (galleryImages && galleryImages.length > 1) { %>
-                        <% galleryImages.slice(1,5).forEach(function(img, idx) { %>
-                            <div class="thumbnail-item">
-                                <img src="<%= img.url %>" class="thumbnail-img" alt="Property view <%= idx+2 %>"
-                                     onclick="openPhotoModal(); showPhoto(<%= idx+1 %>)">
-                            </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div class="thumbnail-item">
-                            <img src="<%= (galleryImages && galleryImages[0] && galleryImages[0].url) ? galleryImages[0].url : '/images/no-image.png' %>"
-                                 class="thumbnail-img" alt="Property view">
-                        </div>
-                    <% } %>
-
-                    <% if (galleryImages && galleryImages.length > 5) { %>
-                        <div class="thumbnail-item more-photos">
-                            <img src="<%= galleryImages[5].url %>" class="thumbnail-img" alt="More photos" onclick="openPhotoModal(); showPhoto(5)">
-                            <div class="more-photos-overlay" onclick="openPhotoModal(); showPhoto(5)">
-                                <span><i class="fas fa-plus"></i> <%= galleryImages.length - 5 %> More</span>
-                            </div>
-                        </div>
-                    <% } %>
-                </div>
-            </div>
-        </div>
+  <!-- Title & Actions Bar -->
+  <div class="d-flex flex-column flex-md-row md-align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="h2 fw-bold text-dark mb-1"><%= listing.title %></h1>
+      <div class="d-flex flex-wrap align-items-center gap-3 text-muted small">
+        <span class="fw-semibold text-dark">
+          <i class="fa-solid fa-star text-warning me-1"></i> 4.95
+          <span class="text-muted fw-normal">(<%= listing.reviews.length %> reviews)</span>
+        </span>
+        <span>•</span>
+        <span class="fw-semibold text-danger">
+          <i class="fa-solid fa-award me-1"></i> Superhost
+        </span>
+        <span>•</span>
+        <span>
+          <i class="fa-solid fa-location-dot text-danger me-1"></i> <%= listing.location %>, <%= listing.country %>
+        </span>
+      </div>
     </div>
 
-    <div class="row">
-        <!-- Main Listing Card -->
-        <div class="col-lg-8 col-md-7">
-            <div class="card listing-card">
-                <div class="card-body">
-                    <div class="owner-info">
-                        <i class="fas fa-user"></i>
-                        Hosted by <%= listing.owner.username %>
-                    </div>
-                    
-                    <p class="listing-description">
-                        <%= listing.description %>
-                    </p>
-                    
-                    <div class="location-info">
-                        <i class="fas fa-map-marker-alt"></i>
+    <!-- Top Action Buttons -->
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!');">
+        <i class="fa-solid fa-arrow-up-from-bracket me-1"></i> Share
+      </button>
+      <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="this.classList.toggle('active'); this.querySelector('i').classList.toggle('fa-solid');">
+        <i class="fa-regular fa-heart me-1"></i> Save
+      </button>
+    </div>
+  </div>
+
+  <!-- Bento 4-Photo Gallery Grid -->
+  <div class="row g-2 mb-5 rounded-4 overflow-hidden shadow-sm" style="max-height: 460px;">
+    <!-- Main Big Photo (Left) -->
+    <div class="col-12 col-md-7 position-relative" style="height: 460px;">
+      <img src="<%= (galleryImages && galleryImages[0] && galleryImages[0].url) ? galleryImages[0].url : '/images/placeholder.jpg' %>" 
+           alt="<%= listing.title %>"
+           class="w-100 h-100 object-fit-cover rounded-start-4 cursor-pointer"
+           style="cursor: pointer; transition: transform 0.4s ease;"
+           onclick="openPhotoModal(); showPhoto(0);">
+    </div>
+
+    <!-- Secondary Photos Grid (Right) -->
+    <div class="col-12 col-md-5 d-none d-md-block" style="height: 460px;">
+      <div class="row g-2 h-100">
+        <% if (galleryImages && galleryImages.length > 1) { %>
+          <% galleryImages.slice(1, 4).forEach(function(img, idx) { %>
+            <div class="<%= idx === 0 ? 'col-12' : 'col-6' %>" style="height: <%= idx === 0 ? '226px' : '226px' %>;">
+              <img src="<%= img.url %>" 
+                   alt="Gallery photo <%= idx + 2 %>"
+                   class="w-100 h-100 object-fit-cover <%= idx === 0 ? 'rounded-top-end-4' : (idx === 2 ? 'rounded-bottom-end-4' : '') %>"
+                   style="cursor: pointer; transition: transform 0.4s ease;"
+                   onclick="openPhotoModal(); showPhoto(<%= idx + 1 %>);">
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="col-12 h-100">
+            <img src="<%= (galleryImages && galleryImages[0] && galleryImages[0].url) ? galleryImages[0].url : '/images/placeholder.jpg' %>" 
+                 class="w-100 h-100 object-fit-cover rounded-end-4">
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Layout (Left Details + Right Sticky Booking) -->
+  <div class="row g-5">
+    
+    <!-- Left Column: Details, Amenities, Map, Reviews -->
+    <div class="col-lg-8">
+      
+      <!-- Host & Property Specs Card -->
+      <div class="glossy-panel p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between pb-4 border-bottom">
+          <div>
+            <h3 class="h5 fw-bold mb-1">Entire villa hosted by <%= listing.owner.username %></h3>
+            <p class="text-muted small mb-0">6 guests • 3 bedrooms • 3 beds • 3 private bathrooms</p>
+          </div>
+          <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center shadow-sm fw-bold" style="width: 52px; height: 52px; font-size: 1.3rem;">
+            <%= listing.owner.username.charAt(0).toUpperCase() %>
+          </div>
+        </div>
+
+        <!-- Pillars of Stay -->
+        <div class="row g-3 py-4 border-bottom">
+          <div class="col-md-4 d-flex align-items-start gap-3">
+            <i class="fa-solid fa-door-open fs-4 text-danger mt-1"></i>
+            <div>
+              <div class="fw-bold small">Self check-in</div>
+              <div class="text-muted" style="font-size: 0.8rem;">Check yourself in with the smart keypad.</div>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex align-items-start gap-3">
+            <i class="fa-solid fa-medal fs-4 text-danger mt-1"></i>
+            <div>
+              <div class="fw-bold small">Experienced Superhost</div>
+              <div class="text-muted" style="font-size: 0.8rem;"><%= listing.owner.username %> has 100% 5-star ratings.</div>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex align-items-start gap-3">
+            <i class="fa-solid fa-calendar-xmark fs-4 text-danger mt-1"></i>
+            <div>
+              <div class="fw-bold small">Free cancellation</div>
+              <div class="text-muted" style="font-size: 0.8rem;">Cancel up to 48 hours before check-in.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="pt-4">
+          <h4 class="h6 fw-bold mb-3">About this space</h4>
+          <p class="text-secondary leading-relaxed mb-0" style="font-size: 0.95rem; line-height: 1.75;">
+            <%= listing.description %>
+          </p>
+        </div>
+      </div>
+
+      <!-- Amenities Section -->
+      <div class="glossy-panel p-4 mb-4">
+        <h4 class="h6 fw-bold mb-3">What this place offers</h4>
+        <div class="row row-cols-1 row-cols-sm-2 g-3">
+          <div class="col d-flex align-items-center gap-3 text-dark">
+            <i class="fa-solid fa-wifi fs-5 text-muted" style="width: 24px;"></i>
+            <span>High-speed WiFi (100+ Mbps)</span>
+          </div>
+          <div class="col d-flex align-items-center gap-3 text-dark">
+            <i class="fa-solid fa-snowflake fs-5 text-muted" style="width: 24px;"></i>
+            <span>Air conditioning & heating</span>
+          </div>
+          <div class="col d-flex align-items-center gap-3 text-dark">
+            <i class="fa-solid fa-utensils fs-5 text-muted" style="width: 24px;"></i>
+            <span>Dedicated chef & kitchen</span>
+          </div>
+          <div class="col d-flex align-items-center gap-3 text-dark">
+            <i class="fa-solid fa-square-parking fs-5 text-muted" style="width: 24px;"></i>
+            <span>Free private parking on premises</span>
+          </div>
+          <div class="col d-flex align-items-center gap-3 text-dark">
+            <i class="fa-solid fa-mountain-sun fs-5 text-muted" style="width: 24px;"></i>
+            <span>Scenic panoramic vistas</span>
+          </div>
+          <div class="col d-flex align-items-center gap-3 text-dark">
+            <i class="fa-solid fa-tv fs-5 text-muted" style="width: 24px;"></i>
+            <span>55" 4K Smart TV with Netflix</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Google Maps Section -->
+      <div class="glossy-panel p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h4 class="h6 fw-bold mb-1"><i class="fa-solid fa-map-location-dot text-danger me-2"></i>Where you'll be</h4>
+            <p class="text-muted small mb-0"><%= listing.location %>, <%= listing.country %></p>
+          </div>
+          <span class="glossy-pill px-3 py-1 small fw-semibold text-muted">
+            <i class="fa-brands fa-google text-primary me-1"></i> Google Maps Verified
+          </span>
+        </div>
+        <div id="map" class="rounded-4 border overflow-hidden shadow-sm" style="height: 380px; width: 100%;"></div>
+      </div>
+
+      <!-- Reviews & Feedback -->
+      <div class="glossy-panel p-4 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <i class="fa-solid fa-star text-warning fs-4"></i>
+          <h3 class="h5 fw-bold mb-0">4.95 • <%= listing.reviews.length %> Reviews</h3>
+        </div>
+
+        <!-- Add Review Form (Logged in users) -->
+        <% if (currUser) { %>
+          <div class="p-3 rounded-3 mb-4 bg-light-subtle border">
+            <h5 class="h6 fw-bold mb-3">Leave a Review</h5>
+            <form action="/listings/<%= listing.id %>/reviews" method="POST" novalidate class="needs-validation">
+              <div class="mb-3">
+                <label class="form-label-custom small">Your Overall Rating</label>
+                <fieldset class="starability-slot">
+                  <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="5" checked aria-label="No rating." />
+                  <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                  <label for="first-rate1" title="Terrible">1 star</label>
+                  <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                  <label for="first-rate2" title="Not good">2 stars</label>
+                  <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                  <label for="first-rate3" title="Average">3 stars</label>
+                  <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                  <label for="first-rate4" title="Very good">4 stars</label>
+                  <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                  <label for="first-rate5" title="Amazing">5 stars</label>
+                </fieldset>
+              </div>
+              <div class="mb-3">
+                <label for="comment" class="form-label-custom small">Share your experience</label>
+                <textarea name="review[comment]" id="comment" rows="3" class="form-control glass-input" placeholder="Tell future guests about the host, amenities, and location..." required></textarea>
+                <div class="invalid-feedback">Please write a short comment.</div>
+              </div>
+              <button type="submit" class="btn-brand-solid btn-sm">
+                <i class="fa-solid fa-paper-plane me-1"></i> Submit Review
+              </button>
+            </form>
+          </div>
+        <% } %>
+
+        <!-- Reviews List -->
+        <% if (listing.reviews.length > 0) { %>
+          <div class="row row-cols-1 row-cols-md-2 g-3">
+            <% for (review of listing.reviews) { %>
+              <div class="col">
+                <div class="p-3 rounded-3 bg-white border h-100 d-flex flex-column justify-content-between">
+                  <div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle bg-secondary-subtle text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                          <%= review.author.username.charAt(0).toUpperCase() %>
+                        </div>
                         <div>
-                            <strong><%= listing.location %></strong><br>
-                            <small class="text-muted"><%= listing.country %></small>
+                          <div class="fw-bold small"><%= review.author.username %></div>
+                          <div class="text-muted" style="font-size: 0.75rem;">Verified Guest</div>
                         </div>
+                      </div>
+                      <p class="starability-result mb-0" data-rating="<%= review.rating %>"></p>
                     </div>
-                    <!-- Quick Facts and Property Features below location-info -->
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <div class="quick-facts-card mb-3">
-                                <h5><i class="fas fa-info-circle"></i> Quick Facts</h5>
-                                <div class="fact-item">
-                                    <i class="fas fa-user"></i>
-                                    <span>Host: <%= listing.owner.username %></span>
+                    <p class="text-secondary small mb-2"><%= review.comment %></p>
+                  </div>
 
-                                </div>
-                                <div class="fact-item">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span><%= listing.location %>, <%= listing.country %></span>
-                                </div>
-                                <div class="fact-item">
-                                    <i class="fas fa-star"></i>
-                                    <span>
-                                        <% if(listing.reviews.length > 0) { %>
-                                            <% let totalRating = 0; %>
-                                            <% for(review of listing.reviews) { totalRating += review.rating; } %>
-                                            <%= (totalRating / listing.reviews.length).toFixed(1) %> 
-                                            (<%= listing.reviews.length %> reviews)
-                                        <% } else { %>
-                                            No reviews yet
-                                        <% } %>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="features-card">
-                                <h5><i class="fas fa-home"></i> Property Features</h5>
-                                <div class="feature-item">
-                                    <i class="fas fa-bed"></i> Comfortable Bedding
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-wifi"></i> Free WiFi
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-car"></i> Parking Available
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-utensils"></i> Kitchen Access
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fa-solid fa-bowl-food"></i> Complementary Food
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar with Price and Quick Info -->
-        <div class="col-lg-4 col-md-5">
-            <div class="sidebar-content">
-                <!-- Price Card -->
-                <div class="price-card">
-                    <div class="price-tag-sidebar">
-                        &#8377; <%= listing.price.toLocaleString("en-IN") %>
-                        <small>/night</small>
-                    </div>
-                    <div class="quick-actions">
-                        <% if (currUser && listing.owner._id.equals(currUser._id)) { %>
-                            <a href="/listings/<%= listing.id %>/edit" class="btn btn-modern btn-edit-sidebar">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" style="margin-top: 1rem;">
-                                <button class="btn btn-modern btn-delete-sidebar w-100">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </form>
-                        <% } else { %>
-                            <% if (currUser) { %>
-                                <!-- logged-in non-owner: show booking form with date inputs -->
-                                <%- include("../includes/booking-card") %>
-                            <% } else { %>
-                                <!-- not logged in: prompt to login before booking -->
-                                <a href="/login" class="btn btn-modern btn-book">
-                                    <i class="fas fa-calendar-alt"></i> Book Now
-                                </a>
-                                <small class="text-muted d-block mt-2">Please login to book</small>
-                            <% } %>
-                        <% } %>
-                    </div>
-                </div>
-                <!-- Removed Quick Facts and Property Features from sidebar as requested -->
-            </div>
-        </div>
-    </div>
-
-
-
-    <!-- Reviews Section -->
-    <div class="row">
-        <div class="col-12">
-            <div class="review-section">
-                <% if(currUser) {%>
-                <h4 class="review-header">Share Your Experience</h4>
-                <div class="review-form">
-                    <form action="/listings/<%= listing.id %>/reviews" method="POST" novalidate class="needs-validation">
-                        <div class="rating-section">
-                            <label for="rating" class="form-label"><strong>How was your stay?</strong></label>
-                            <fieldset class="starability-slot">
-                                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
-                                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
-                                <label for="first-rate1" title="Terrible">1 star</label>
-                                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
-                                <label for="first-rate2" title="Not good">2 stars</label>
-                                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
-                                <label for="first-rate3" title="Average">3 stars</label>
-                                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
-                                <label for="first-rate4" title="Very good">4 stars</label>
-                                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
-                                <label for="first-rate5" title="Amazing">5 stars</label>
-                            </fieldset>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="comment" class="form-label"><strong>Tell us about your experience</strong></label>
-                            <textarea name="review[comment]" id="comment" cols="30" rows="4" class="form-control" 
-                                placeholder="Share your thoughts about this place..." required></textarea>
-                            <div class="invalid-feedback">Please add some comments for review</div>
-                        </div>
-                        
-                        <div class="text-center">
-                            <button class="btn btn-submit">
-                                <i class="fas fa-paper-plane"></i> Submit Review
-                            </button>
-                        </div>
+                  <% if (currUser && (currUser._id.equals(review.author._id) || currUser._id.equals(listing.owner._id))) { %>
+                    <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" class="text-end">
+                      <button class="btn btn-sm btn-link text-danger p-0 text-decoration-none small">
+                        <i class="fa-solid fa-trash me-1"></i> Delete
+                      </button>
                     </form>
+                  <% } %>
                 </div>
-                <% } %>
-
-                <!-- Display Reviews -->
-                <% if(listing.reviews.length > 0) { %>
-                <h4 class="review-header">What Guests Are Saying</h4>
-                <div class="reviews-container">
-                    <% for(review of listing.reviews) { %>
-                    <div class="review-card">
-                        <div class="review-card-body">
-                            <h6 class="review-author">
-                                <i class="fas fa-user-circle"></i> @<%= review.author.username %>
-                            </h6>
-                            <p class="starability-result" data-rating="<%= review.rating %>"></p>
-                            <p class="review-comment"><%= review.comment %></p>
-                            
-                            <% if(currUser && (currUser._id.equals(review.author._id) || currUser._id.equals(listing.owner._id))) { %>
-                            <form method="POST" action="/listings/<%= listing._id%>/reviews/<%= review._id %>?_method=DELETE">
-                                <button class="btn btn-delete-review">
-                                    <i class="fas fa-times"></i> Remove
-                                </button>
-                            </form>
-                            <% } %>
-                        </div>
-                    </div>
-                    <% } %>
-                </div>
-                <% } else { %>
-                <div class="text-center">
-                    <p class="text-muted"><em>No reviews yet. Be the first to share your experience!</em></p>
-                </div>
-                <% } %>
-            </div>
-        </div>
-    </div>
-
-    <!-- Map Section -->
-    <div class="row">
-        <div class="col-12">
-            <div class="map-section">
-                <h3 class="map-title">
-                    <i class="fas fa-map-marked-alt"></i> Discover the Location
-                </h3>
-                <div id="map"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Photo Modal -->
-<div id="photoModal" class="photo-modal" aria-hidden="true">
-    <!-- corrected class name to match defined CSS (.modal-content-photo) -->
-    <div class="modal-content-photo">
-        <span class="close-modal" onclick="closePhotoModal()" role="button" aria-label="Close">&times;</span>
-
-        <div class="main-photo-display">
-            <img id="mainModalImg" class="main-modal-img"
-                 src="<%= (galleryImages && galleryImages[0] && galleryImages[0].url) ? galleryImages[0].url : '/images/no-image.png' %>"
-                 alt="Property photo">
-            <div class="photo-counter">
-                <span id="currentPhoto">1</span> / <span id="totalPhotos"><%= (galleryImages && galleryImages.length) ? galleryImages.length : 1 %></span>
-            </div>
-        </div>
-
-        <div class="photo-thumbnails-sidebar" role="navigation" aria-label="Photo thumbnails">
-            <% if (galleryImages && galleryImages.length) { %>
-                <% galleryImages.forEach(function(img, i) { %>
-                    <div class="thumbnail-modal-item <%= i===0 ? 'active' : '' %>" onclick="showPhoto(<%= i %>)" role="button" tabindex="0">
-                        <img class="thumbnail-modal-img" src="<%= img.url %>" alt="Photo <%= i+1 %>">
-                    </div>
-                <% }); %>
+              </div>
             <% } %>
+          </div>
+        <% } else { %>
+          <p class="text-muted text-center py-3 mb-0"><em>No reviews yet. Be the first to review this extraordinary stay!</em></p>
+        <% } %>
+
+      </div>
+
+      <!-- Host Controls (Owner Edit / Delete) -->
+      <% if (currUser && listing.owner._id.equals(currUser._id)) { %>
+        <div class="glossy-panel p-4 mb-4 border-warning">
+          <h5 class="h6 fw-bold mb-2 text-dark"><i class="fa-solid fa-crown text-warning me-2"></i>Host Administration</h5>
+          <p class="text-muted small mb-3">You are the owner of this property. Manage your listing details or remove it from Homigo.</p>
+          <div class="d-flex gap-2">
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-dark rounded-pill px-4 btn-sm">
+              <i class="fa-solid fa-pen-to-square me-1"></i> Edit Listing
+            </a>
+            <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" onsubmit="return confirm('Are you sure you want to delete this listing?');">
+              <button class="btn btn-danger rounded-pill px-4 btn-sm">
+                <i class="fa-solid fa-trash me-1"></i> Delete Stay
+              </button>
+            </form>
+          </div>
         </div>
+      <% } %>
+
     </div>
+
+    <!-- Right Column: Sticky Booking Widget -->
+    <div class="col-lg-4">
+      <div class="position-sticky" style="top: 6.5rem; z-index: 50;">
+        <%- include("../includes/booking-card") %>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Photo Lightbox Modal -->
+<div id="photoModal" class="modal fade" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content glossy-panel border-0 p-3">
+      <div class="modal-header border-0 pb-0">
+        <span class="fw-bold small text-muted"><span id="currentPhotoNum">1</span> / <span id="totalPhotosNum"><%= galleryImages.length || 1 %></span></span>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-2">
+        <img id="modalFullImg" src="" class="img-fluid rounded-3 shadow" style="max-height: 70vh; object-fit: contain;">
+      </div>
+      <div class="modal-footer border-0 pt-0 justify-content-between">
+        <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="changePhoto(-1)">
+          <i class="fa-solid fa-arrow-left"></i> Previous
+        </button>
+        <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="changePhoto(1)">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-    let currentPhotoIndex = 0;
+  let activeIndex = 0;
+  let photoModalInstance = null;
 
-    function openPhotoModal() {
-        const modal = document.getElementById('photoModal');
-        // use aria-hidden to control visibility (CSS handles display)
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        // ensure totalPhotos reflects actual count
-        document.getElementById('totalPhotos').textContent = (galleryImages && galleryImages.length) ? galleryImages.length : 1;
-        // show requested photo if one was queued via showPhoto call
+  function openPhotoModal() {
+    const modalEl = document.getElementById('photoModal');
+    if (!photoModalInstance) {
+      photoModalInstance = new bootstrap.Modal(modalEl);
     }
+    photoModalInstance.show();
+  }
 
-    function closePhotoModal() {
-        const modal = document.getElementById('photoModal');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = 'auto';
-        // let browser finish hiding animation/layout then force map resize
-        setTimeout(ensureMapRender, 200);
-    }
+  function showPhoto(idx) {
+    if (!galleryImages || galleryImages.length === 0) return;
+    activeIndex = Math.max(0, Math.min(idx, galleryImages.length - 1));
+    const target = galleryImages[activeIndex] || galleryImages[0];
+    document.getElementById('modalFullImg').src = target.url || target;
+    document.getElementById('currentPhotoNum').textContent = activeIndex + 1;
+    document.getElementById('totalPhotosNum').textContent = galleryImages.length;
+    openPhotoModal();
+  }
 
-    function showPhoto(index) {
-        if (!galleryImages || galleryImages.length === 0) return;
-        currentPhotoIndex = Math.max(0, Math.min(index, galleryImages.length - 1));
-        const imgObj = galleryImages[currentPhotoIndex] || galleryImages[0];
-        const mainImg = document.getElementById('mainModalImg');
-        mainImg.src = imgObj.url;
-        document.getElementById('currentPhoto').textContent = currentPhotoIndex + 1;
-
-        const thumbnails = document.querySelectorAll('.thumbnail-modal-item');
-        thumbnails.forEach(thumb => thumb.classList.remove('active'));
-        if (thumbnails[currentPhotoIndex]) {
-            thumbnails[currentPhotoIndex].classList.add('active');
-            thumbnails[currentPhotoIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-        }
-    }
-
-    // Keyboard navigation uses aria-hidden to check visibility
-    document.addEventListener('keydown', function(event) {
-        const modal = document.getElementById('photoModal');
-        if (modal && modal.getAttribute('aria-hidden') === 'false') {
-            if (event.key === 'Escape') {
-                closePhotoModal();
-            } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-                event.preventDefault();
-                const prevIndex = currentPhotoIndex > 0 ? currentPhotoIndex - 1 : (galleryImages.length - 1);
-                showPhoto(prevIndex);
-            } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-                event.preventDefault();
-                const nextIndex = currentPhotoIndex < (galleryImages.length - 1) ? currentPhotoIndex + 1 : 0;
-                showPhoto(nextIndex);
-            }
-        }
-    });
-
-    // Close modal when clicking outside (uses aria-hidden)
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('photoModal');
-        if (modal && modal.getAttribute('aria-hidden') === 'false' && event.target === modal) {
-            closePhotoModal();
-        }
-    });
-
-    // try to initialize or resize the map so tiles appear correctly
-    function ensureMapRender() {
-      // Try library-provided initializer if your map.js exposes one
-      if (typeof initMap === 'function') {
-        try { initMap(); } catch (e) { console.warn('initMap error', e); }
-      }
-      // Try common global map objects and call their resize methods
-      try {
-        if (window.map && typeof window.map.resize === 'function') {
-          window.map.resize();
-        } else if (window.myMap && typeof window.myMap.resize === 'function') {
-          window.myMap.resize();
-        } else if (window._map && typeof window._map.resize === 'function') {
-          window._map.resize();
-        }
-      } catch (e) {
-        console.warn('map resize failed', e);
-      }
-    }
-
-    // run after full page load (give layout a moment to settle)
-    window.addEventListener('load', function () {
-      setTimeout(ensureMapRender, 300);
-    });
-
-    // also call once shortly after DOM ready (covers other init timing)
-    setTimeout(ensureMapRender, 800);
+  function changePhoto(direction) {
+    if (!galleryImages || galleryImages.length === 0) return;
+    let next = activeIndex + direction;
+    if (next < 0) next = galleryImages.length - 1;
+    if (next >= galleryImages.length) next = 0;
+    showPhoto(next);
+  }
 </script>
 
-<!-- ensure map code is loaded after galleryImages/listing vars -->
+<!-- Google Maps JS Loader -->
 <script src="/js/map.js"></script>
-<script>
-  // try to initialize or resize the map so tiles appear correctly
-  function ensureMapRender() {
-    // Try library-provided initializer if your map.js exposes one
-    if (typeof initMap === 'function') {
-      try { initMap(); } catch (e) { console.warn('initMap error', e); }
-    }
-    // Try common global map objects and call their resize methods
-    try {
-      if (window.map && typeof window.map.resize === 'function') {
-        window.map.resize();
-      } else if (window.myMap && typeof window.myMap.resize === 'function') {
-        window.myMap.resize();
-      } else if (window._map && typeof window._map.resize === 'function') {
-        window._map.resize();
-      }
-    } catch (e) {
-      console.warn('map resize failed', e);
-    }
-  }
-
-  // run after full page load (give layout a moment to settle)
-  window.addEventListener('load', function () {
-    setTimeout(ensureMapRender, 300);
-  });
-
-  // also call once shortly after DOM ready (covers other init timing)
-  setTimeout(ensureMapRender, 800);
-
-  // replace/augment closePhotoModal so map can reflow when modal closes
-  function closePhotoModal() {
-      const modal = document.getElementById('photoModal');
-      modal.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = 'auto';
-      // let browser finish hiding animation/layout then force map resize
-      setTimeout(ensureMapRender, 200);
-  }
-</script>

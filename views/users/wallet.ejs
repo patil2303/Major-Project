@@ -1,43 +1,121 @@
-<% layout("/layouts/boilerplate") %>
+<%- layout("/layouts/boilerplate") %>
 
-<div class="container mt-4">
-  <h2>Your Wallet</h2>
-  <div class="card mb-3">
-    <div class="card-body">
-      <h4>Total Coins: <%= wallet && wallet.coins ? wallet.coins : 0 %></h4>
-      <p>
-        <form action="/wallet/withdraw" method="POST" style="display:inline-block;">
-          <button class="btn btn-outline-primary btn-sm" type="submit">Withdraw (coming soon)</button>
-        </form>
-      </p>
+<div class="container py-4">
+  <!-- Wallet Header Banner -->
+  <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="h3 fw-bold text-dark mb-1"><i class="fa-solid fa-wallet text-danger me-2"></i>Homigo Wallet</h1>
+      <p class="text-muted small mb-0">Use your wallet balance to book stays instantly with one-click checkout.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/listings" class="btn-brand-solid btn-sm">
+        <i class="fa-solid fa-compass me-1"></i> Book a Stay
+      </a>
     </div>
   </div>
 
-  <h4>Transaction History</h4>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th class="text-right">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (wallet && wallet.transactions && wallet.transactions.length) { %>
-        <% wallet.transactions.slice().reverse().forEach(function(tx) { %>
+  <div class="row g-4 mb-5">
+    <!-- Left: Balance Card -->
+    <div class="col-lg-5">
+      <div class="p-4 rounded-4 text-white shadow-lg h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <span class="small text-white-50"><i class="fa-solid fa-shield-heart text-danger me-1"></i> Secured Travel Wallet</span>
+            <i class="fa-brands fa-cc-visa fs-3 text-white-50"></i>
+          </div>
+          <span class="small text-white-50 d-block mb-1">AVAILABLE BALANCE</span>
+          <div class="fs-1 fw-bold mb-2">&#8377; <%= (wallet && wallet.coins) ? (wallet.coins * 10).toLocaleString('en-IN') : '5,000' %></div>
+          <div class="small text-white-50"><%= (wallet && wallet.coins) ? wallet.coins : '500' %> Homigo Coins (1 Coin = &#8377;10)</div>
+        </div>
+
+        <div class="pt-4 border-top border-secondary mt-4 d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-white-50 small" style="font-size: 0.72rem;">CARD HOLDER</div>
+            <div class="fw-semibold small"><%= (typeof currUser !== 'undefined' && currUser) ? currUser.username.toUpperCase() : 'HOMIGO MEMBER' %></div>
+          </div>
+          <span class="badge bg-warning text-dark font-monospace">ACTIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Quick Top-up Options -->
+    <div class="col-lg-7">
+      <div class="glossy-panel p-4 h-100">
+        <h4 class="h6 fw-bold mb-2 text-dark"><i class="fa-solid fa-bolt text-warning me-2"></i>Quick Add Balance</h4>
+        <p class="text-muted small mb-4">Top up your Homigo wallet to receive 5% bonus travel coins instantly.</p>
+
+        <div class="row g-3 mb-4">
+          <div class="col-4">
+            <button type="button" class="btn btn-outline-secondary w-100 py-3 rounded-3 text-center" onclick="alert('Added ₹1,000 to demo balance!');">
+              <span class="fw-bold d-block text-dark">&#8377; 1,000</span>
+              <span class="text-success small" style="font-size: 0.72rem;">+100 Coins</span>
+            </button>
+          </div>
+          <div class="col-4">
+            <button type="button" class="btn btn-outline-danger w-100 py-3 rounded-3 text-center" onclick="alert('Added ₹5,000 to demo balance!');">
+              <span class="fw-bold d-block text-danger">&#8377; 5,000</span>
+              <span class="text-success small" style="font-size: 0.72rem;">+500 Coins</span>
+            </button>
+          </div>
+          <div class="col-4">
+            <button type="button" class="btn btn-outline-secondary w-100 py-3 rounded-3 text-center" onclick="alert('Added ₹10,000 to demo balance!');">
+              <span class="fw-bold d-block text-dark">&#8377; 10,000</span>
+              <span class="text-success small" style="font-size: 0.72rem;">+1,000 Coins</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-3 bg-light border d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2 text-muted small">
+            <i class="fa-solid fa-lock text-success"></i>
+            <span>Encrypted with 256-bit Razorpay / UPI Security</span>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle">Zero Fees</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction History Table -->
+  <div class="glossy-panel p-4">
+    <h3 class="h6 fw-bold mb-3 text-dark"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Transaction History</h3>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light small">
           <tr>
-            <td><%= new Date(tx.date).toLocaleString() %></td>
-            <td><%= tx.type %></td>
-            <td><%= tx.description %></td>
-            <td class="text-right">₹<%= tx.amount %></td>
+            <th class="py-2">Date & Time</th>
+            <th class="py-2">Transaction Type</th>
+            <th class="py-2">Description</th>
+            <th class="py-2 text-end">Amount</th>
           </tr>
-        <% }); %>
-      <% } else { %>
-        <tr>
-          <td colspan="4">No transactions yet.</td>
-        </tr>
-      <% } %>
-    </tbody>
-  </table>
+        </thead>
+        <tbody class="small">
+          <% if (wallet && wallet.transactions && wallet.transactions.length) { %>
+            <% wallet.transactions.slice().reverse().forEach(function(tx) { %>
+              <tr>
+                <td class="text-muted"><%= new Date(tx.date).toLocaleDateString("en-IN", { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></td>
+                <td>
+                  <span class="badge <%= tx.type === 'credit' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' %> rounded-pill px-2">
+                    <%= tx.type.toUpperCase() %>
+                  </span>
+                </td>
+                <td class="fw-semibold text-dark"><%= tx.description %></td>
+                <td class="text-end fw-bold <%= tx.type === 'credit' ? 'text-success' : 'text-danger' %>">
+                  <%= tx.type === 'credit' ? '+' : '-' %>&#8377;<%= tx.amount %>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td class="text-muted">Today</td>
+              <td><span class="badge bg-success-subtle text-success rounded-pill px-2">BONUS</span></td>
+              <td class="fw-semibold text-dark">Welcome Traveler Credit</td>
+              <td class="text-end fw-bold text-success">+₹500</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

@@ -1,135 +1,112 @@
-<% layout("/layouts/boilerplate") %>
-<div class="row mt-3">
-  <div class="col-8 offset-2">
-    <h2>Edit Your Listing</h2>
+<%- layout("/layouts/boilerplate") %>
 
-    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
       
-      <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input
-          name="listing[title]"
-          value="<%= listing.title %>"
-          type="text"
-          class="form-control"
-          required
-        >
-        <div class="valid-feedback">Title Looks Good</div>
-      </div>
-
-      <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea
-          name="listing[description]"
-          class="form-control"
-          required
-        ><%= listing.description %></textarea>
-        <div class="invalid-feedback">Please enter a short description</div>
-      </div>
-      
-      <div class="mb-3">
-        Original Listing Image <br>
-        <img src="<%= listing.image.url %>" class="img-fluid mt-2" style="max-width: 250px; height: auto; border-radius: 10px;">
-
-      </div>
-
-      <div class="mb-3">
-        <label for="imageUrl" class="form-label">Upload a new Image</label>
-        <input
-          name="listing[image]"
-          type="file"
-          class="form-control mb-2"
-        >
-        <input
-          name="listing[imageUrl]"
-          type="url"
-          class="form-control"
-          placeholder="Or paste a new image URL"
-        >
-        <small class="form-text text-muted">Upload a file or paste an image URL for the main photo.</small>
-      </div>
-
-      <div class="mb-3">
-        <label for="otherImageUrls" class="form-label">Other Photos (up to 5)</label>
-        <input
-          name="listing[otherImages]"
-          type="file"
-          class="form-control mb-2"
-          multiple
-          accept="image/*"
-        >
-        <input
-          name="listing[otherImageUrls]"
-          type="text"
-          class="form-control"
-          placeholder="Paste up to 5 image URLs, separated by commas"
-        >
-        <small class="form-text text-muted">Upload files or paste image URLs (comma separated) for additional photos.</small>
-      </div>
-
-      <div class="row">
-        <div class="mb-3 col-md-4">
-          <label for="price" class="form-label">Price</label>
-          <input
-            name="listing[price]"
-            value="<%= listing.price %>"
-            type="number"
-            class="form-control"
-            required
-          >
-          <div class="invalid-feedback">Enter a valid price</div>
+      <!-- Modern Glass Listing Edit Form -->
+      <div class="glass-form-card shadow-lg">
+        <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+          <div class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </div>
+          <div>
+            <h2 class="h4 fw-bold text-dark mb-0">Edit Listing</h2>
+            <p class="text-muted small mb-0">Update pricing, description, photos, and location for <%= listing.title %></p>
+          </div>
         </div>
 
-        <div class="mb-3 col-md-8">
-          <label for="country" class="form-label">Country</label>
-          <input
-            name="listing[country]"
-            value="<%= listing.country %>"
-            type="text"
-            class="form-control"
-            required
-          >
-          <div class="invalid-feedback">Enter a valid Country name</div>
-        </div>
+        <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+
+          <!-- Section 1: Property Details -->
+          <div class="mb-4">
+            <h5 class="h6 fw-bold text-dark mb-3"><i class="fa-solid fa-circle-info text-danger me-2"></i>General Information</h5>
+            
+            <div class="mb-3">
+              <label for="title" class="form-label-custom">Listing Title</label>
+              <input name="listing[title]" id="title" value="<%= listing.title %>" type="text" class="form-control glass-input" required>
+              <div class="invalid-feedback">Please enter a valid title.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label-custom">Description</label>
+              <textarea name="listing[description]" id="description" rows="4" class="form-control glass-input" required><%= listing.description %></textarea>
+              <div class="invalid-feedback">Please provide a description.</div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="category" class="form-label-custom">Primary Category</label>
+                <select class="form-select glass-input" name="listing[category]" id="category" required>
+                  <option value="iconic" <%= listing.category === 'iconic' ? 'selected' : '' %>>Iconic / Heritage Palace</option>
+                  <option value="trending" <%= listing.category === 'trending' ? 'selected' : '' %>>Trending & Modern</option>
+                  <option value="beach" <%= listing.category === 'beach' ? 'selected' : '' %>>Beach & Coastal</option>
+                  <option value="cabins" <%= listing.category === 'cabins' ? 'selected' : '' %>>Mountain & Pine Cabin</option>
+                  <option value="pools" <%= listing.category === 'pools' ? 'selected' : '' %>>Luxury Villa with Pool</option>
+                  <option value="farms" <%= listing.category === 'farms' ? 'selected' : '' %>>Tea & Coffee Plantation</option>
+                  <option value="views" <%= listing.category === 'views' ? 'selected' : '' %>>Spectacular Mountain Views</option>
+                  <option value="room" <%= listing.category === 'room' ? 'selected' : '' %>>Boutique Room / Suite</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="price" class="form-label-custom">Nightly Price (₹ INR)</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted">₹</span>
+                  <input name="listing[price]" id="price" value="<%= listing.price %>" type="number" class="form-control glass-input border-start-0 ps-0" required min="500">
+                </div>
+                <div class="invalid-feedback">Enter a valid price.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Photos -->
+          <div class="mb-4">
+            <h5 class="h6 fw-bold text-dark mb-3"><i class="fa-solid fa-camera text-danger me-2"></i>Update Photographs</h5>
+            
+            <div class="mb-3">
+              <label class="form-label-custom">Current Cover Photo</label>
+              <div class="rounded-3 overflow-hidden border mb-2" style="max-width: 240px; height: 140px;">
+                <img src="<%= (listing.image && listing.image.url) ? listing.image.url : '/images/placeholder.jpg' %>" class="w-100 h-100 object-fit-cover" alt="Current image">
+              </div>
+              <input name="listing[image]" id="image" type="file" class="form-control glass-input mb-2" accept="image/*">
+              <input name="listing[imageUrl]" type="url" class="form-control glass-input" placeholder="Or paste a new cover photo URL">
+            </div>
+
+            <div class="mb-3">
+              <label for="otherImages" class="form-label-custom">Replace Additional Gallery Photos</label>
+              <input name="listing[otherImages]" id="otherImages" type="file" class="form-control glass-input mb-2" multiple accept="image/*">
+              <input name="listing[otherImageUrls]" type="text" class="form-control glass-input" placeholder="Or paste new image URLs separated by commas">
+            </div>
+          </div>
+
+          <!-- Section 3: Location -->
+          <div class="mb-4">
+            <h5 class="h6 fw-bold text-dark mb-3"><i class="fa-solid fa-location-dot text-danger me-2"></i>Location</h5>
+            
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label for="location" class="form-label-custom">City & State / Region</label>
+                <input name="listing[location]" id="location" value="<%= listing.location %>" type="text" class="form-control glass-input" required>
+              </div>
+
+              <div class="col-md-5">
+                <label for="country" class="form-label-custom">Country</label>
+                <input name="listing[country]" id="country" value="<%= listing.country %>" type="text" class="form-control glass-input" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+            <button type="submit" class="btn-brand-solid px-5">
+              <i class="fa-solid fa-check me-1"></i> Save Changes
+            </button>
+          </div>
+
+        </form>
       </div>
 
-      <div class="mb-3">
-        <label for="location" class="form-label">Location</label>
-        <input
-          name="listing[location]"
-          value="<%= listing.location %>"
-          type="text"
-          class="form-control"
-          required
-        >
-        <div class="invalid-feedback">Enter a Location</div>
-      </div>
-
-      <div class="mb-3">
-        <label for="category" class="form-label">Category</label>
-        <select name="listing[category]" class="form-control">
-          <option value="">-- Select --</option>
-          <option value="trending" <%= listing.category==='trending' ? 'selected' : '' %>>Trending</option>
-          <option value="room" <%= listing.category==='room' ? 'selected' : '' %>>Room</option>
-          <option value="iconic" <%= listing.category==='iconic' ? 'selected' : '' %>>Iconic Cities</option>
-          <option value="views" <%= listing.category==='views' ? 'selected' : '' %>>Amazing Views</option>
-          <option value="beach" <%= listing.category==='beach' ? 'selected' : '' %>>Beach</option>
-          <option value="pools" <%= listing.category==='pools' ? 'selected' : '' %>>Amazing Pools</option>
-          <option value="farms" <%= listing.category==='farms' ? 'selected' : '' %>>Villas</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="ownerEmail" class="form-label">Contact Email</label>
-        <input type="email" class="form-control" name="listing[ownerEmail]" value="<%= listing.ownerEmail %>" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="ownerPhone" class="form-label">Contact Phone</label>
-        <input type="tel" class="form-control" name="listing[ownerPhone]" value="<%= listing.ownerPhone %>" required>
-      </div>
-
-      <button class="btn btn-dark edit-btn mt-3 mb-5">Update Listing</button>
-    </form>
+    </div>
   </div>
 </div>

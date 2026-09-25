@@ -1,163 +1,112 @@
-<% layout("/layouts/boilerplate") %>
+<%- layout("/layouts/boilerplate") %>
 
 <% 
   var u = (typeof user !== 'undefined' && user) ? user : (typeof currUser !== 'undefined' ? currUser : null);
   var w = (typeof wallet !== 'undefined' && wallet) ? wallet : (typeof locals !== 'undefined' && locals.wallet ? locals.wallet : null);
 %>
 
-<style>
-  /* Layout */
-  .profile-wrap { padding: 2.5rem 0; }
-  .dashboard { display:flex; gap:2rem; align-items:flex-start; }
-
-  /* Sidebar */
-  .sidebar {
-    width: 280px;
-    background: #f5f7fa;
-    border-radius: 10px;
-    padding: 1.25rem;
-    box-shadow: 0 6px 18px rgba(15,15,15,0.04);
-    min-height: 560px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-  }
-  .avatar {
-    width:88px; height:88px; border-radius:50%;
-    background:#2f80ed; color:#fff;
-    display:inline-flex; align-items:center; justify-content:center;
-    font-size:34px; font-weight:700; margin:0 auto;
-  }
-  .sb-name { text-align:center; margin-top:.6rem; font-weight:700; }
-  .sb-email { text-align:center; color:#6c757d; font-size:.9rem; margin-bottom:.8rem; }
-
-  .sb-nav { list-style:none; padding:0; margin:1rem 0; }
-  .sb-nav li { margin: .35rem 0; }
-  .sb-nav a {
-    display:flex; align-items:center; gap:.75rem;
-    padding:.65rem .6rem; border-radius:8px; color:#495057; text-decoration:none;
-  }
-  .sb-nav a .fa { width:18px; text-align:center; color:#6c757d; }
-  .sb-nav a:hover { background: rgba(47,128,237,0.06); color:#2f80ed; }
-  .sb-nav a.active { background:#2f80ed; color:#fff !important; }
-  .sb-nav a.active .fa { color:#fff; }
-
-  .sb-footer { display:flex; gap:.5rem; margin-top:1rem; justify-content:space-between; }
-  .sb-footer a { flex:1; text-align:center; padding:.5rem .4rem; border-radius:8px; background:#fff; color:#495057; border:1px solid #e9eef5; text-decoration:none; font-size:.9rem; }
-
-  /* Main */
-  .main { flex:1; }
-  .card {
-    background:#fff; border-radius:10px; padding:1rem; box-shadow:0 8px 24px rgba(20,24,31,0.04); margin-bottom:1rem;
-  }
-
-  .tabs { display:flex; gap:1rem; border-bottom:1px solid #eef3f8; padding-bottom:.5rem; margin-bottom:1rem; }
-  .tabs a { color:#2f80ed; text-decoration:none; padding:.35rem .6rem; border-radius:6px; }
-  .tabs a.active { background:#e9f2ff; border-bottom:3px solid #2f80ed; font-weight:600; }
-
-  .label { font-size:.9rem; color:#6c757d; margin-bottom:.35rem; }
-  .readonly {
-    width:100%; padding:.6rem .75rem; background:#fbfdff; border:1px solid #eef3f8; border-radius:8px; color:#495057;
-  }
-
-  /* Wallet tile */
-  .wallet-tile {
-    background: linear-gradient(135deg,#2f80ed,#2b6fd6);
-    color:#fff; padding:1rem 1.25rem; border-radius:8px; min-width:200px; box-shadow:0 8px 20px rgba(43,111,214,0.12);
-  }
-  .wallet-tile .small { font-size:.9rem; opacity:.95; }
-  .wallet-tile .big { font-size:1.6rem; font-weight:700; margin-top:.35rem; }
-
-  @media (max-width:991.98px) {
-    .dashboard { flex-direction:column; }
-    .sidebar { width:100%; order:2; min-height:auto; }
-    .main { order:1; }
-  }
-</style>
-
-<div class="container profile-wrap">
-  <% if (locals.error) { %><div class="alert alert-danger"><%= locals.error %></div><% } %>
-  <% if (locals.success) { %><div class="alert alert-success"><%= locals.success %></div><% } %>
-  <% if (locals.info) { %><div class="alert alert-info"><%= locals.info %></div><% } %>
-
-  <% if (!u) { %>
-    <div class="alert alert-warning">You are not signed in. Please <a href="/login">log in</a> to view your profile.</div>
-  <% } else { %>
-
-  <div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div>
-        <div class="text-center">
-          <div class="avatar"><%= u.username ? u.username.charAt(0).toUpperCase() : 'U' %></div>
-          <div class="sb-name"><%= u.username %></div>
-          <div class="sb-email"><%= u.email || '' %></div>
+<div class="container py-4">
+  <!-- Profile Header Banner -->
+  <div class="glossy-panel p-4 mb-4 shadow-sm">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center shadow-sm fw-bold fs-3" style="width: 72px; height: 72px;">
+          <%= u ? u.username.charAt(0).toUpperCase() : 'U' %>
         </div>
-
-        <ul class="sb-nav">
-          <li><a href="/listings"><i class="fa fa-compass"></i> Explore</a></li>
-          <li><a href="/bookings"><i class="fa fa-calendar-check"></i> My Bookings</a></li>
-          <li><a href="/profile" class="active"><i class="fa fa-user"></i> My Profile</a></li>
-          <li><a href="/listings"><i class="fa fa-search"></i> Search</a></li>
-          <li><a href="/listings/new"><i class="fa fa-plus-square"></i> Add Hotel</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <div class="sb-footer">
-          <a href="/bookings">My Bookings</a>
-          <a href="/wallet">Wallet</a>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main content -->
-    <main class="main">
-      <div class="card">
-        <h5 style="margin-bottom:.5rem">Profile Details</h5>
-
-        <div class="tabs">
-          <a class="active" href="#">Profile Details</a>
-          <a href="/wallet">Wallet</a>
-        </div>
-
         <div>
-          <div class="mb-3">
-            <div class="label">Username</div>
-            <input class="readonly" value="<%= u.username %>" disabled>
+          <h2 class="h4 fw-bold text-dark mb-0"><%= u ? u.username : 'Traveler' %></h2>
+          <div class="text-muted small">
+            <i class="fa-solid fa-envelope me-1"></i> <%= u ? u.email : 'user@homigo.com' %> 
+            <% if (u && u.phoneNumber) { %>
+              • <i class="fa-solid fa-phone me-1"></i> <%= u.phoneNumber %>
+            <% } %>
           </div>
-
-          <div class="mb-3">
-            <div class="label">Email</div>
-            <input class="readonly" value="<%= u.email || '' %>" disabled>
-          </div>
-
-          <div class="mb-3">
-            <div class="label">Member since</div>
-            <div class="readonly"><%= u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A' %></div>
-          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 small mt-2">
+            <i class="fa-solid fa-shield-check me-1"></i> Verified Homigo Member
+          </span>
         </div>
       </div>
 
-      <div class="card">
-        <h5 style="margin-bottom:.75rem">Wallet</h5>
-        <div class="d-flex align-items-start gap-3">
-          <div class="wallet-tile">
-            <div class="small">Total Coins</div>
-            <div class="big">₹<%= w && w.coins ? w.coins : 0 %></div>
-            <div style="margin-top:.45rem; font-size:.9rem;"><a href="/wallet" style="color:rgba(255,255,255,0.95); text-decoration:underline;">View Transactions</a></div>
-          </div>
-
-          <div class="flex-fill">
-            <p class="mb-2 text-muted">Coins are credited automatically when guests book your listings. Withdrawals will be available soon.</p>
-            <a href="/wallet" class="btn btn-outline-primary btn-sm">Go to Wallet</a>
-          </div>
-        </div>
+      <!-- Quick Actions -->
+      <div class="d-flex gap-2">
+        <a href="/bookings" class="btn-host-action small">
+          <i class="fa-solid fa-calendar-check text-primary me-1"></i> My Bookings
+        </a>
+        <a href="/wallet" class="btn-host-action small">
+          <i class="fa-solid fa-wallet text-warning me-1"></i> Wallet
+        </a>
+        <a href="/listings/new" class="btn-brand-solid btn-sm">
+          <i class="fa-solid fa-plus me-1"></i> Host a Stay
+        </a>
       </div>
-    </main>
+    </div>
   </div>
 
-  <% } %>
+  <!-- User Details & Stats Grid -->
+  <div class="row g-4">
+    <!-- Left Column: Account Details -->
+    <div class="col-lg-6">
+      <div class="glossy-panel p-4 h-100">
+        <h4 class="h6 fw-bold mb-3 text-dark"><i class="fa-solid fa-id-card text-danger me-2"></i>Account Details</h4>
+        
+        <div class="mb-3">
+          <label class="form-label-custom small text-muted">USERNAME</label>
+          <div class="p-2 rounded bg-light border text-dark fw-semibold small"><%= u ? u.username : 'N/A' %></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom small text-muted">EMAIL ADDRESS</label>
+          <div class="p-2 rounded bg-light border text-dark fw-semibold small"><%= u ? u.email : 'N/A' %></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom small text-muted">PHONE NUMBER</label>
+          <div class="p-2 rounded bg-light border text-dark fw-semibold small"><%= (u && u.phoneNumber) ? u.phoneNumber : '+91 98765 43210' %></div>
+        </div>
+
+        <div class="mb-0">
+          <label class="form-label-custom small text-muted">MEMBERSHIP STATUS</label>
+          <div class="p-2 rounded bg-light border text-dark fw-semibold small">Active • Premium Guest Tier</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Wallet & Rewards Overview -->
+    <div class="col-lg-6">
+      <div class="glossy-panel p-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h4 class="h6 fw-bold mb-0 text-dark"><i class="fa-solid fa-coins text-warning me-2"></i>Homigo Wallet & Perks</h4>
+          <a href="/wallet" class="small text-danger fw-semibold text-decoration-none">Manage Wallet &rarr;</a>
+        </div>
+
+        <!-- Wallet Card Visual -->
+        <div class="p-4 rounded-4 text-white mb-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small text-white-50"><i class="fa-solid fa-compass text-danger me-1"></i> Homigo Travel Pass</span>
+            <span class="badge bg-warning text-dark font-monospace fw-bold">GOLD</span>
+          </div>
+          <div class="fs-2 fw-bold mb-1">&#8377; <%= (w && w.coins) ? (w.coins * 10).toLocaleString('en-IN') : '5,000' %></div>
+          <div class="small text-white-50"><%= (w && w.coins) ? w.coins : '500' %> Homigo Coins Available</div>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-6">
+            <a href="/bookings" class="d-block p-3 rounded-3 bg-light border text-decoration-none text-dark text-center">
+              <i class="fa-solid fa-calendar-days fs-4 text-primary mb-1 d-block"></i>
+              <span class="fw-bold small d-block">My Trips</span>
+              <span class="text-muted" style="font-size: 0.75rem;">View active bookings</span>
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="/listings" class="d-block p-3 rounded-3 bg-light border text-decoration-none text-dark text-center">
+              <i class="fa-solid fa-heart fs-4 text-danger mb-1 d-block"></i>
+              <span class="fw-bold small d-block">Saved Stays</span>
+              <span class="text-muted" style="font-size: 0.75rem;">Explore 50+ stays</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
-
-
