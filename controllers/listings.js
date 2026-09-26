@@ -113,28 +113,43 @@ module.exports.createListing = async (req, res, next) => {
 
   let { listing } = req.body;
 
-  // debug
-  console.log('createListing - uploaded files count:', req.files && req.files.length);
-
-  // Handle uploaded files: first uploaded file -> mainImage, rest -> otherImages
+  // Handle uploaded files
   let mainImage = { url: '', filename: '' };
   let otherImages = [];
 
   if (req.files && req.files.length > 0) {
-    const first = req.files[0];
-    mainImage.url = getFileUrl(first);
-    mainImage.filename = first.filename || 'uploaded-image';
-    if (req.files.length > 1) {
-      otherImages = req.files.slice(1).map(f => ({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' }));
+    const mainFile = req.files.find(f => f.fieldname === 'listing[image]' || f.fieldname === 'image');
+    const galleryFiles = req.files.filter(f => f.fieldname === 'listing[otherImages]' || f.fieldname === 'otherImages');
+
+    if (mainFile) {
+      mainImage.url = getFileUrl(mainFile);
+      mainImage.filename = mainFile.filename || 'uploaded-image';
+    } else if (galleryFiles.length > 0 && !listing.imageUrl) {
+      const first = galleryFiles[0];
+      mainImage.url = getFileUrl(first);
+      mainImage.filename = first.filename || 'uploaded-image';
+      galleryFiles.slice(1).forEach(f => {
+        otherImages.push({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' });
+      });
+    }
+
+    if (mainFile && galleryFiles.length > 0) {
+      galleryFiles.forEach(f => {
+        otherImages.push({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' });
+      });
     }
   } else if (req.file) {
     mainImage.url = getFileUrl(req.file);
     mainImage.filename = req.file.filename || 'uploaded-image';
-  } else if (listing.imageUrl) {
+  }
+
+  if (!mainImage.url && listing.imageUrl) {
     mainImage.url = listing.imageUrl;
     mainImage.filename = '';
-  } else {
-    mainImage.url = "https://media.istockphoto.com/id/474185479/photo/barbados.jpg?s=612x612&w=0&k=20&c=CoMAIsVOAPd6IzyrigoQdTn6POtp-OSnMv0cS9AzBzc=";
+  }
+
+  if (!mainImage.url) {
+    mainImage.url = "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80";
     mainImage.filename = "default.jpg";
   }
 
@@ -154,7 +169,7 @@ module.exports.createListing = async (req, res, next) => {
       unique.push(img);
     }
   });
-  otherImages = unique.slice(0, 5); // limit if desired
+  otherImages = unique.slice(0, 5);
 
   const ownerEmail = (listing.ownerEmail && listing.ownerEmail.trim()) || (req.user && req.user.email) || "host@homigo.com";
   const ownerPhone = (listing.ownerPhone && listing.ownerPhone.trim()) || (req.user && req.user.phoneNumber) || "+919999999999";
@@ -182,7 +197,7 @@ module.exports.renderEditForm = async (req, res) => {
     req.flash("error" ,"Listing u requested for does not exist!");
     res.redirect("/listings");
   }
-  let originalImageUrl = listing.image.url;
+  let originalImageUrl = (listing.image && listing.image.url) ? listing.image.url : '/images/placeholder.jpg';
   originalImageUrl = originalImageUrl.replace("/upload","/upload/h_300,w_250,c_fill");
   res.render("listings/edit.ejs", { listing, originalImageUrl });
 }
@@ -192,14 +207,18 @@ module.exports.updateListing = async (req, res) => {
   let { listing } = req.body;
   let updatedListing = await Listing.findById(id);
 
-  console.log('updateListing - uploaded files count:', req.files && req.files.length);
-
-  // Handle uploaded files: first file => main image, rest append to otherImages
+  // Handle uploaded files
   if (req.files && req.files.length > 0) {
-    const first = req.files[0];
-    updatedListing.image = { url: getFileUrl(first), filename: first.filename || 'uploaded-image' };
-    const newOtherFromFiles = req.files.slice(1).map(f => ({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' }));
-    updatedListing.otherImages = (updatedListing.otherImages || []).concat(newOtherFromFiles);
+    const mainFile = req.files.find(f => f.fieldname === 'listing[image]' || f.fieldname === 'image');
+    const galleryFiles = req.files.filter(f => f.fieldname === 'listing[otherImages]' || f.fieldname === 'otherImages');
+
+    if (mainFile) {
+      updatedListing.image = { url: getFileUrl(mainFile), filename: mainFile.filename || 'uploaded-image' };
+    }
+    if (galleryFiles.length > 0) {
+      const newOtherFromFiles = galleryFiles.map(f => ({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' }));
+      updatedListing.otherImages = (updatedListing.otherImages || []).concat(newOtherFromFiles);
+    }
   } else if (req.file) {
     updatedListing.image = { url: getFileUrl(req.file), filename: req.file.filename || 'uploaded-image' };
   } else if (listing.imageUrl) {
