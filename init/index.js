@@ -1,5 +1,11 @@
+const path = require("path");
+const dns = require("dns");
+try {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch (e) {}
+
 if (process.env.NODE_ENV !== "production") {
-    require("dotenv").config({ path: "../.env" });
+    require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 }
 
 const mongoose = require("mongoose");
@@ -42,7 +48,8 @@ const locationCoordinates = {
 };
 
 async function main() {
-    await mongoose.connect(Mongo_Url);
+    console.log("Connecting to:", Mongo_Url ? Mongo_Url.replace(/:[^:]*@/, ":***@") : "none");
+    await mongoose.connect(Mongo_Url, { family: 4, serverSelectionTimeoutMS: 15000 });
     console.log("Connected to database for initialization");
 
     // Ensure a default owner user exists
