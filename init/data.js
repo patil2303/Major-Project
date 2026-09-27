@@ -253,7 +253,7 @@ const sampleListings = [
     description: "Experience the ultimate cosmic luxury under the world's clearest night skies in the Nubra Valley. Geodesic insulated glass domes equipped with heated wooden floors, plush bedding, and high-powered stargazing telescopes.",
     image: {
       filename: "ladakh-main",
-      url: "https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80"
+      url: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=1200&q=80"
     },
     otherImages: [
       {
@@ -382,7 +382,7 @@ const sampleListings = [
     otherImages: [
       {
         filename: "shimla-lounge",
-        url: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80"
+        url: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80"
       },
       {
         filename: "shimla-bedroom",
@@ -594,7 +594,7 @@ const sampleListings = [
     description: "Surrounded by surreal prehistoric granite boulders and the Tungabhadra river. Banana plantations, open-air stone pavilions, traditional South Indian thali dining, and guided bouldering and heritage coracle boat rides.",
     image: {
       filename: "hampi-main",
-      url: "https://images.unsplash.com/photo-1600100397608-f010f443b79f?auto=format&fit=crop&w=1200&q=80"
+      url: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1200&q=80"
     },
     otherImages: [
       {
@@ -758,7 +758,7 @@ const sampleListings = [
       },
       {
         filename: "ooty-living",
-        url: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80"
+        url: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80"
       },
       {
         filename: "ooty-room",
@@ -935,7 +935,7 @@ const sampleListings = [
     description: "An authentic, eco-insulated Himalayan mudhouse at 12,000 feet in the trans-Himalayan desert of Spiti. Traditional Bukhari heating, handmade Tibetan yak-wool rugs, panoramic views of Key Monastery, and star-filled night skies.",
     image: {
       filename: "spiti-main",
-      url: "https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80"
+      url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80"
     },
     otherImages: [
       {
@@ -1130,7 +1130,7 @@ const sampleListings = [
       },
       {
         filename: "mountabu-living",
-        url: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80"
+        url: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80"
       },
       {
         filename: "mountabu-terrace",
@@ -1223,7 +1223,7 @@ const sampleListings = [
       },
       {
         filename: "coonoor-living",
-        url: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80"
+        url: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80"
       },
       {
         filename: "coonoor-suite",
@@ -1307,7 +1307,7 @@ const sampleListings = [
     description: "Located near the 400-year-old Tawang Monastery at 10,000 feet. Features heated Tibetan timber suites, handcrafted butter lamps, prayer flag verandas, and dramatic views of snowy high-Himalayan passes.",
     image: {
       filename: "tawang-main",
-      url: "https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=1200&q=80"
+      url: "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=1200&q=80"
     },
     otherImages: [
       {
@@ -1347,7 +1347,7 @@ const sampleListings = [
       },
       {
         filename: "pachmarhi-living",
-        url: "https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80"
+        url: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80"
       },
       {
         filename: "pachmarhi-room",

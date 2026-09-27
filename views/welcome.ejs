@@ -495,15 +495,135 @@
             height: 480px;
         }
 
-        .bento-card-main img {
+        .bento-slides-container {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .bento-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(1.05);
+        }
+
+        .bento-slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .bento-slide img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .bento-card-main:hover img {
-            transform: scale(1.05);
+        /* Slide Indicator Dots */
+        .hero-carousel-dots {
+            position: absolute;
+            top: 1.25rem;
+            left: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            z-index: 15;
+        }
+
+        .hero-carousel-dot {
+            width: 20px;
+            height: 5px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.45);
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-carousel-dot.active {
+            width: 32px;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Live indicator badge */
+        .hero-live-badge {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #ffffff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.3rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            z-index: 15;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ef4444;
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            animation: pulseGlow 1.8s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Nav arrows */
+        .hero-nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            font-size: 0.85rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.25s ease;
+            z-index: 20;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        }
+
+        .bento-card-main:hover .hero-nav-arrow {
+            opacity: 1;
+        }
+
+        .hero-nav-prev { left: 1rem; }
+        .hero-nav-next { right: 1rem; }
+
+        .hero-nav-arrow:hover {
+            background: #ffffff;
+            color: var(--brand);
+            transform: translateY(-50%) scale(1.1);
         }
 
         .bento-floating-badge {
@@ -512,8 +632,8 @@
             left: 1.5rem;
             right: 1.5rem;
             border-radius: 1.25rem;
-            padding: 1.25rem 1.5rem;
-            background: rgba(255, 255, 255, 0.85);
+            padding: 1.1rem 1.4rem;
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.95);
@@ -521,6 +641,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            z-index: 15;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .bento-floating-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
         }
 
         .bento-info-title {
@@ -826,15 +953,72 @@
             }
         }
 
+        @media (max-width: 767.98px) {
+            .hero-section {
+                padding: 2.5rem 1rem 2rem 1rem;
+            }
+            .hero-headline {
+                font-size: 2.6rem;
+                letter-spacing: -1px;
+            }
+            .bento-card-main {
+                height: 360px;
+                border-radius: 1.5rem;
+            }
+            .mini-floating-chip {
+                top: 0.6rem;
+                right: 0.6rem;
+                font-size: 0.72rem;
+                padding: 0.35rem 0.75rem;
+                animation: none;
+            }
+            .mini-floating-chip-left {
+                top: auto;
+                bottom: 5.8rem;
+                left: 0.6rem;
+                font-size: 0.72rem;
+                padding: 0.4rem 0.8rem;
+                animation: none;
+            }
+            .bento-floating-badge {
+                bottom: 0.75rem;
+                left: 0.75rem;
+                right: 0.75rem;
+                padding: 0.85rem 1rem;
+            }
+            .hero-nav-arrow {
+                opacity: 0.9;
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+            .hero-nav-prev { left: 0.5rem; }
+            .hero-nav-next { right: 0.5rem; }
+            .section-wrap {
+                padding: 3rem 1rem;
+            }
+            .section-heading {
+                font-size: 2.1rem;
+            }
+        }
+
         @media (max-width: 576px) {
             .hero-headline {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
             }
             .hero-lead {
-                font-size: 1.05rem;
+                font-size: 0.98rem;
             }
             .floating-nav {
-                padding: 0.6rem 1.2rem;
+                padding: 0.6rem 1rem;
+            }
+            .btn-nav-login {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.8rem;
+            }
+            .btn-nav-signup {
+                padding: 0.4rem 0.9rem;
+                font-size: 0.8rem;
             }
             .features-grid {
                 grid-template-columns: 1fr;
@@ -842,11 +1026,18 @@
             .glass-search-capsule {
                 flex-direction: column;
                 border-radius: 1.5rem;
-                padding: 1rem;
+                padding: 0.85rem;
                 gap: 0.75rem;
             }
             .btn-search-go {
                 width: 100%;
+            }
+            .dest-pills-row {
+                gap: 0.4rem;
+            }
+            .dest-pill {
+                padding: 0.25rem 0.7rem;
+                font-size: 0.78rem;
             }
         }
     </style>
@@ -888,6 +1079,11 @@
                 <% } %>
             </div>
         </nav>
+    </div>
+
+    <!-- Flash Notifications Container -->
+    <div class="flash-container" style="max-width: 1140px; margin: 1rem auto 0 auto; padding: 0 1.25rem;">
+        <%- include("./includes/flash.ejs") %>
     </div>
 
     <!-- Hero Section -->
@@ -981,7 +1177,7 @@
                 </div>
             </div>
 
-            <!-- Right Hero Bento Card (Tactile, Real Product Visual) -->
+            <!-- Right Hero Bento Card (Tactile, Rotating Stay Visual Showcase) -->
             <div class="col-lg-5">
                 <div class="hero-bento-visual">
                     <!-- Floating Verified Host Chip -->
@@ -995,26 +1191,78 @@
                         <i class="fa-solid fa-star text-warning"></i>
                         <div>
                             <div style="font-size:0.85rem; font-weight:700;">4.95 Rating</div>
-                            <div style="font-size:0.75rem; color:#64748b;">500+ happy guests</div>
+                            <div style="font-size:0.75rem; color:#64748b;">500+ verified guests</div>
                         </div>
                     </div>
 
-                    <!-- Main Showcase Card -->
-                    <div class="bento-card-main">
-                        <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80" alt="Jaipur Royal Heritage Haveli">
-                        
-                        <div class="bento-floating-badge">
-                            <div>
-                                <h4 class="bento-info-title">The Royal Heritage Haveli</h4>
-                                <div class="bento-info-loc">
-                                    <i class="fa-solid fa-location-dot me-1 text-danger"></i> Jaipur, Rajasthan
-                                </div>
+                    <!-- Main Rotating Showcase Card -->
+                    <div class="bento-card-main" id="heroShowcaseCard">
+                        <!-- Slide Progress Dots -->
+                        <div class="hero-carousel-dots" id="heroDots">
+                            <button type="button" class="hero-carousel-dot active" onclick="goToHeroSlide(0)" aria-label="Slide 1"></button>
+                            <button type="button" class="hero-carousel-dot" onclick="goToHeroSlide(1)" aria-label="Slide 2"></button>
+                            <button type="button" class="hero-carousel-dot" onclick="goToHeroSlide(2)" aria-label="Slide 3"></button>
+                            <button type="button" class="hero-carousel-dot" onclick="goToHeroSlide(3)" aria-label="Slide 4"></button>
+                            <button type="button" class="hero-carousel-dot" onclick="goToHeroSlide(4)" aria-label="Slide 5"></button>
+                            <button type="button" class="hero-carousel-dot" onclick="goToHeroSlide(5)" aria-label="Slide 6"></button>
+                        </div>
+
+                        <!-- Live Pulse Badge -->
+                        <div class="hero-live-badge">
+                            <span class="pulse-dot"></span> Live Showcase
+                        </div>
+
+                        <!-- Rotating Slides Stack -->
+                        <div class="bento-slides-container">
+                            <div class="bento-slide active" data-title="The Royal Heritage Haveli" data-loc="Jaipur, Rajasthan" data-price="₹6,500" data-link="/listings?search=Jaipur" data-cat="Heritage Palace">
+                                <img src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80" alt="Jaipur Royal Heritage Haveli">
                             </div>
-                            <div class="bento-info-price">
-                                ₹6,500
-                                <small>/night</small>
+                            <div class="bento-slide" data-title="Oceanfront Sunset Villa" data-loc="Calangute, Goa" data-price="₹5,200" data-link="/listings?search=Goa" data-cat="Beachfront Villa">
+                                <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80" alt="Goa Oceanfront Sunset Villa">
+                            </div>
+                            <div class="bento-slide" data-title="Himalayan Pine Chalet" data-loc="Manali, Himachal Pradesh" data-price="₹4,500" data-link="/listings?search=Manali" data-cat="Mountain Retreat">
+                                <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80" alt="Manali Himalayan Pine Chalet">
+                            </div>
+                            <div class="bento-slide" data-title="Luxury Backwater Houseboat" data-loc="Alleppey, Kerala" data-price="₹7,200" data-link="/listings?search=Kerala" data-cat="Backwaters">
+                                <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80" alt="Kerala Backwaters Houseboat">
+                            </div>
+                            <div class="bento-slide" data-title="Lake Pichola Palace Villa" data-loc="Udaipur, Rajasthan" data-price="₹8,800" data-link="/listings?search=Udaipur" data-cat="Royal Lake View">
+                                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80" alt="Udaipur Lake Pichola Palace Villa">
+                            </div>
+                            <div class="bento-slide" data-title="Starlit Mountain Glamping" data-loc="Leh, Ladakh" data-price="₹7,900" data-link="/listings?search=Ladakh" data-cat="Stargazing Dome">
+                                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" alt="Ladakh Mountain Glamping">
                             </div>
                         </div>
+
+                        <!-- Manual Arrows -->
+                        <button type="button" class="hero-nav-arrow hero-nav-prev" onclick="prevHeroSlide(event)" aria-label="Previous Stay">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="hero-nav-arrow hero-nav-next" onclick="nextHeroSlide(event)" aria-label="Next Stay">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+
+                        <!-- Dynamic Floating Info Badge -->
+                        <a href="/listings?search=Jaipur" id="heroStayLink" class="bento-floating-badge text-decoration-none">
+                            <div>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-0.5 rounded-pill mb-1 small fw-semibold" id="heroStayCat">
+                                    Heritage Palace
+                                </span>
+                                <h4 class="bento-info-title mb-0" id="heroStayTitle">The Royal Heritage Haveli</h4>
+                                <div class="bento-info-loc mt-1">
+                                    <i class="fa-solid fa-location-dot me-1 text-danger"></i> <span id="heroStayLoc">Jaipur, Rajasthan</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="bento-info-price">
+                                    <span id="heroStayPrice">₹6,500</span>
+                                    <small>/night</small>
+                                </div>
+                                <span class="badge bg-white text-dark shadow-xs border mt-1 px-2 py-0.5 rounded-pill small d-inline-flex align-items-center gap-1">
+                                    Explore <i class="fa-solid fa-arrow-right" style="font-size: 10px;"></i>
+                                </span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1153,5 +1401,80 @@
         <p class="mb-0">&copy; <%= new Date().getFullYear() %> Homigo. Handcrafted for travelers across India.</p>
     </footer>
 
+    <script>
+        let currentHeroSlide = 0;
+        const heroSlides = document.querySelectorAll('.bento-slide');
+        const heroDots = document.querySelectorAll('.hero-carousel-dot');
+        let heroSlideTimer = null;
+
+        function setHeroSlide(idx) {
+            if (!heroSlides.length) return;
+            currentHeroSlide = (idx + heroSlides.length) % heroSlides.length;
+
+            heroSlides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentHeroSlide);
+            });
+
+            heroDots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentHeroSlide);
+            });
+
+            const activeSlide = heroSlides[currentHeroSlide];
+            const title = activeSlide.getAttribute('data-title');
+            const loc = activeSlide.getAttribute('data-loc');
+            const price = activeSlide.getAttribute('data-price');
+            const link = activeSlide.getAttribute('data-link');
+            const cat = activeSlide.getAttribute('data-cat');
+
+            const titleEl = document.getElementById('heroStayTitle');
+            const locEl = document.getElementById('heroStayLoc');
+            const priceEl = document.getElementById('heroStayPrice');
+            const linkEl = document.getElementById('heroStayLink');
+            const catEl = document.getElementById('heroStayCat');
+
+            if (titleEl) titleEl.textContent = title;
+            if (locEl) locEl.textContent = loc;
+            if (priceEl) priceEl.textContent = price;
+            if (linkEl) linkEl.href = link;
+            if (catEl) catEl.textContent = cat;
+        }
+
+        function nextHeroSlide(e) {
+            if (e) e.stopPropagation();
+            setHeroSlide(currentHeroSlide + 1);
+            resetHeroTimer();
+        }
+
+        function prevHeroSlide(e) {
+            if (e) e.stopPropagation();
+            setHeroSlide(currentHeroSlide - 1);
+            resetHeroTimer();
+        }
+
+        function goToHeroSlide(idx) {
+            setHeroSlide(idx);
+            resetHeroTimer();
+        }
+
+        function startHeroTimer() {
+            heroSlideTimer = setInterval(() => {
+                setHeroSlide(currentHeroSlide + 1);
+            }, 3800);
+        }
+
+        function resetHeroTimer() {
+            clearInterval(heroSlideTimer);
+            startHeroTimer();
+        }
+
+        const heroCard = document.getElementById('heroShowcaseCard');
+        if (heroCard) {
+            heroCard.addEventListener('mouseenter', () => clearInterval(heroSlideTimer));
+            heroCard.addEventListener('mouseleave', () => resetHeroTimer());
+            heroCard.addEventListener('touchstart', () => clearInterval(heroSlideTimer), { passive: true });
+            heroCard.addEventListener('touchend', () => resetHeroTimer(), { passive: true });
+            startHeroTimer();
+        }
+    </script>
 </body>
 </html>

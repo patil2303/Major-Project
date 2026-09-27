@@ -12,7 +12,7 @@ module.exports.createBooking = wrapAsync(async (req, res) => {
     const { id } = req.params;
     const { checkIn, checkOut } = req.body;
 
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("owner");
     if (!listing) {
         throw new ExpressError("Listing not found", 404);
     }
@@ -32,7 +32,8 @@ module.exports.createBooking = wrapAsync(async (req, res) => {
     }
 
     // Prevent owners from booking their own listing
-    if (listing.owner && listing.owner.equals && listing.owner.equals(req.user._id)) {
+    const ownerId = listing.owner && (listing.owner._id || listing.owner);
+    if (ownerId && ownerId.equals && ownerId.equals(req.user._id)) {
         req.flash("error", "You cannot book your own listing");
         return res.redirect(`/listings/${id}`);
     }

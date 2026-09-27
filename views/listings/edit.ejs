@@ -70,13 +70,44 @@
                 <img src="<%= (listing.image && listing.image.url) ? listing.image.url : '/images/placeholder.jpg' %>" class="w-100 h-100 object-fit-cover" alt="Current image">
               </div>
               <input name="listing[image]" id="image" type="file" class="form-control glass-input mb-2" accept="image/*">
-              <input name="listing[imageUrl]" type="url" class="form-control glass-input" placeholder="Or paste a new cover photo URL">
+              <input name="listing[imageUrl]" id="imageUrl" type="url" class="form-control glass-input" placeholder="Or paste a new cover photo URL">
             </div>
 
             <div class="mb-3">
               <label for="otherImages" class="form-label-custom">Replace Additional Gallery Photos</label>
               <input name="listing[otherImages]" id="otherImages" type="file" class="form-control glass-input mb-2" multiple accept="image/*">
-              <input name="listing[otherImageUrls]" type="text" class="form-control glass-input" placeholder="Or paste new image URLs separated by commas">
+              <input name="listing[otherImageUrls]" id="otherImageUrls" type="text" class="form-control glass-input" placeholder="Or paste new image URLs separated by commas">
+            </div>
+
+            <!-- Live Photo Previews Grid -->
+            <div class="p-3 rounded-3 bg-light-subtle border mt-3" id="previewContainer">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="fw-bold small text-dark"><i class="fa-solid fa-images text-danger me-1"></i> Live New Image Previews</span>
+                <span class="badge bg-secondary-subtle text-muted" id="previewCountBadge">No new images selected</span>
+              </div>
+
+              <div id="previewEmptyState" class="text-center py-3 text-muted small">
+                <i class="fa-regular fa-image fs-4 d-block mb-1 opacity-50"></i>
+                Select a new cover or gallery photos above to preview how they will look before updating.
+              </div>
+
+              <div id="previewGrid" class="row g-2 d-none">
+                <div class="col-12 col-sm-6 d-none" id="coverPreviewCol">
+                  <div class="card h-100 border-0 shadow-sm overflow-hidden position-relative rounded-3" style="min-height: 180px;">
+                    <img id="coverPreviewImg" src="" alt="Cover preview" class="w-100 h-100 object-fit-cover" style="height: 180px;">
+                    <span class="badge bg-danger position-absolute top-0 start-0 m-2 shadow-sm rounded-pill px-2 py-1 small">
+                      <i class="fa-solid fa-star me-1"></i> New Cover
+                    </span>
+                    <button type="button" class="btn btn-sm btn-dark position-absolute top-0 end-0 m-2 rounded-circle p-1" style="width:26px; height:26px; line-height:1;" onclick="clearCoverPreview()" title="Clear">
+                      &times;
+                    </button>
+                  </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                  <div class="row g-2" id="galleryPreviewList"></div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -97,9 +128,9 @@
             </div>
           </div>
 
-          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
-            <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
-            <button type="submit" class="btn-brand-solid px-5">
+          <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 gap-sm-3 pt-3 border-top">
+            <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary rounded-pill px-4 text-center">Cancel</a>
+            <button type="submit" class="btn-brand-solid px-5 text-center justify-content-center">
               <i class="fa-solid fa-check me-1"></i> Save Changes
             </button>
           </div>
@@ -110,3 +141,109 @@
     </div>
   </div>
 </div>
+
+<script>
+  let activeObjectUrls = [];
+
+  function revokeAllObjectUrls() {
+    activeObjectUrls.forEach(url => URL.revokeObjectURL(url));
+    activeObjectUrls = [];
+  }
+
+  function updateImagePreviews() {
+    revokeAllObjectUrls();
+    
+    const imageInput = document.getElementById('image');
+    const imageUrlInput = document.getElementById('imageUrl');
+    const otherImagesInput = document.getElementById('otherImages');
+    const otherImageUrlsInput = document.getElementById('otherImageUrls');
+    
+    const previewEmptyState = document.getElementById('previewEmptyState');
+    const previewGrid = document.getElementById('previewGrid');
+    const coverPreviewCol = document.getElementById('coverPreviewCol');
+    const coverPreviewImg = document.getElementById('coverPreviewImg');
+    const galleryPreviewList = document.getElementById('galleryPreviewList');
+    const countBadge = document.getElementById('previewCountBadge');
+
+    let coverSrc = null;
+    if (imageInput.files && imageInput.files[0]) {
+      coverSrc = URL.createObjectURL(imageInput.files[0]);
+      activeObjectUrls.push(coverSrc);
+    } else if (imageUrlInput && imageUrlInput.value.trim()) {
+      coverSrc = imageUrlInput.value.trim();
+    }
+
+    if (coverSrc) {
+      coverPreviewImg.src = coverSrc;
+      coverPreviewCol.classList.remove('d-none');
+    } else {
+      coverPreviewImg.src = '';
+      coverPreviewCol.classList.add('d-none');
+    }
+
+    galleryPreviewList.innerHTML = '';
+    let galleryCount = 0;
+
+    if (otherImagesInput.files && otherImagesInput.files.length > 0) {
+      const files = Array.from(otherImagesInput.files).slice(0, 4);
+      files.forEach((file, idx) => {
+        galleryCount++;
+        const blobUrl = URL.createObjectURL(file);
+        activeObjectUrls.push(blobUrl);
+        const col = document.createElement('div');
+        col.className = 'col-6';
+        col.innerHTML = `
+          <div class="card h-100 border-0 shadow-sm overflow-hidden position-relative rounded-3" style="height: 85px;">
+            <img src="${blobUrl}" class="w-100 h-100 object-fit-cover" alt="Gallery preview ${idx + 1}">
+            <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 start-0 m-1 px-1.5 py-0.5 text-white" style="font-size:10px;">
+              <i class="fa-solid fa-photo-film me-1"></i>#${idx + 1}
+            </span>
+          </div>
+        `;
+        galleryPreviewList.appendChild(col);
+      });
+    }
+
+    if (otherImageUrlsInput && otherImageUrlsInput.value.trim()) {
+      const urls = otherImageUrlsInput.value.split(',').map(u => u.trim()).filter(u => u.length > 0);
+      urls.slice(0, 4 - galleryCount).forEach((url, idx) => {
+        galleryCount++;
+        const col = document.createElement('div');
+        col.className = 'col-6';
+        col.innerHTML = `
+          <div class="card h-100 border-0 shadow-sm overflow-hidden position-relative rounded-3" style="height: 85px;">
+            <img src="${url}" class="w-100 h-100 object-fit-cover" alt="Gallery preview" onerror="this.src='/images/placeholder.jpg'">
+            <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 start-0 m-1 px-1.5 py-0.5 text-white" style="font-size:10px;">
+              <i class="fa-solid fa-link me-1"></i>Link
+            </span>
+          </div>
+        `;
+        galleryPreviewList.appendChild(col);
+      });
+    }
+
+    const totalImages = (coverSrc ? 1 : 0) + galleryCount;
+    if (totalImages > 0) {
+      previewEmptyState.classList.add('d-none');
+      previewGrid.classList.remove('d-none');
+      countBadge.textContent = `${totalImages} new photo${totalImages > 1 ? 's' : ''} ready`;
+      countBadge.className = 'badge bg-success-subtle text-success border border-success-subtle';
+    } else {
+      previewEmptyState.classList.remove('d-none');
+      previewGrid.classList.add('d-none');
+      countBadge.textContent = 'No new images selected';
+      countBadge.className = 'badge bg-secondary-subtle text-muted';
+    }
+  }
+
+  function clearCoverPreview() {
+    document.getElementById('image').value = '';
+    if (document.getElementById('imageUrl')) document.getElementById('imageUrl').value = '';
+    updateImagePreviews();
+  }
+
+  document.getElementById('image').addEventListener('change', updateImagePreviews);
+  if (document.getElementById('imageUrl')) document.getElementById('imageUrl').addEventListener('input', updateImagePreviews);
+  document.getElementById('otherImages').addEventListener('change', updateImagePreviews);
+  if (document.getElementById('otherImageUrls')) document.getElementById('otherImageUrls').addEventListener('input', updateImagePreviews);
+</script>

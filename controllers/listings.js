@@ -88,6 +88,14 @@ module.exports.showListing = async (req, res) => {
     return res.redirect("/listings");
   }
 
+  if (!listing.owner) {
+    listing.owner = {
+      _id: null,
+      username: "Homigo Superhost",
+      email: listing.ownerEmail || "host@homigo.com"
+    };
+  }
+
   // Build a single gallery array (main image first, then unique otherImages)
   const galleryImages = [];
   const seen = new Set();

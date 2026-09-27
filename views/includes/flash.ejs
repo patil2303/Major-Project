@@ -1,23 +1,65 @@
 <% if (success && success.length) { %>
-  <div class="flash-toast flash-success mb-3 alert alert-dismissible fade show" role="alert">
+  <div class="flash-toast flash-success mb-3 alert alert-dismissible fade show shadow-sm" role="alert">
     <div class="d-flex align-items-center gap-2">
-      <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+      <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-size: 0.8rem; flex-shrink: 0;">
         <i class="fa-solid fa-check"></i>
       </div>
-      <span class="fw-medium text-dark"><%= success %></span>
+      <span class="fw-semibold text-dark"><%= success %></span>
     </div>
     <button type="button" class="btn-close ms-auto shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="flash-timer-bar"></div>
   </div>
 <% } %>
 
 <% if (error && error.length) { %>
-  <div class="flash-toast flash-error mb-3 alert alert-dismissible fade show" role="alert">
+  <div class="flash-toast flash-error mb-3 alert alert-dismissible fade show shadow-sm" role="alert">
     <div class="d-flex align-items-center gap-2">
-      <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
+      <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-size: 0.8rem; flex-shrink: 0;">
         <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
-      <span class="fw-medium text-dark"><%= error %></span>
+      <span class="fw-semibold text-dark"><%= error %></span>
     </div>
     <button type="button" class="btn-close ms-auto shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="flash-timer-bar error"></div>
   </div>
 <% } %>
+
+<style>
+  .flash-toast {
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), max-height 0.5s ease, margin 0.5s ease;
+  }
+  .flash-timer-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: #10b981;
+    width: 100%;
+    animation: flashProgress 3.5s linear forwards;
+  }
+  .flash-timer-bar.error {
+    background: #ef4444;
+  }
+  @keyframes flashProgress {
+    from { width: 100%; }
+    to { width: 0%; }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const alerts = document.querySelectorAll(".flash-toast");
+    alerts.forEach((alert) => {
+      // Auto vanish after 3.5 seconds
+      setTimeout(() => {
+        alert.style.opacity = "0";
+        alert.style.transform = "translateY(-12px)";
+        setTimeout(() => {
+          alert.remove();
+        }, 500);
+      }, 3500);
+    });
+  });
+</script>

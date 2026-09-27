@@ -84,7 +84,7 @@ async function connectDB() {
     // 1. Try Atlas DB if configured
     if (dbUrl && dbUrl.trim() !== "") {
         try {
-            await mongoose.connect(dbUrl, { family: 4, serverSelectionTimeoutMS: 5000 });
+            await mongoose.connect(dbUrl, { family: 4, serverSelectionTimeoutMS: 10000 });
             console.log("✅ Connected to Atlas DB");
             await seedIfEmpty();
             return dbUrl;

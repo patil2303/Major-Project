@@ -647,18 +647,64 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--brand);
 }
 
+/* Responsive Gallery & Detail Page Helpers */
+.show-gallery-grid {
+  max-height: 280px;
+}
+.show-gallery-main {
+  height: 280px;
+}
+@media (min-width: 768px) {
+  .show-gallery-grid {
+    max-height: 460px;
+  }
+  .show-gallery-main {
+    height: 460px;
+  }
+}
+
 /* --------------------------------------------------------------------------
    Responsive Utilities
    -------------------------------------------------------------------------- */
 @media (max-width: 767.98px) {
   .nav-wrapper {
     padding: 0 0.5rem;
+    top: 0.5rem;
   }
   .navbar-glossy {
     border-radius: var(--radius-md);
     padding: 0.6rem 1rem;
   }
   .glass-form-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+  }
+  .homigo-card {
+    border-radius: var(--radius-md);
+  }
+  .card-img-container {
+    height: 200px;
+  }
+  .main-footer {
+    padding: 2rem 1rem 1.5rem 1rem;
+    margin-top: 3rem;
+  }
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  .footer-links-row {
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .card-img-container {
+    height: 190px;
+  }
+  .flash-container {
+    padding: 0 0.5rem;
   }
 }
