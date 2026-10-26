@@ -2,19 +2,22 @@ body {
     font-family: "Plus Jakarta Sans", sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-  }
+}
   
-  /* Define multiple weight classes */
-  .font-thin { font-weight: 100; }
-  .font-extra-light { font-weight: 200; }
-  .font-light { font-weight: 300; }
-  .font-regular { font-weight: 400; }
-  .font-medium { font-weight: 500; }
-  .font-semibold { font-weight: 600; }
-  .font-bold { font-weight: 700; }
-  .font-extra-bold { font-weight: 800; }
-  .font-black { font-weight: 900; }
-  
+/* Define multiple weight classes */
+.font-thin { font-weight: 100; }
+.font-extra-light { font-weight: 200; }
+.font-light { font-weight: 300; }
+.font-regular { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extra-bold { font-weight: 800; }
+.font-black { font-weight: 900; }
+
+html {
+    scroll-behavior: smooth;
+}
 
 .navbar{
     height: 5rem;
@@ -22,7 +25,7 @@ body {
 }
 
 .fa-compass{
-  color: #fe424d;
+    color: #fe424d;
     font-size: 2rem;
 }
 
@@ -34,9 +37,9 @@ body {
     text-decoration: none;
     color: #222222;
 }
+
 .f-info-links a:hover{
     text-decoration: underline;
-   
 }
 
 .f-info{
@@ -59,6 +62,12 @@ body {
 .f-info-socials i{
     margin-right: 1rem;
     font-size: 1.2rem;
+    color: #222222;
+    transition: color 0.2s ease;
+}
+
+.f-info-socials a:hover i {
+    color: #fe424d;
 }
 
 .listing-card {
@@ -79,7 +88,7 @@ body {
 }
 
 .card-text p{
- font-weight: 400  !important;
+    font-weight: 400 !important;
 }
 
 .listing-link{
@@ -128,3 +137,39 @@ body {
     width: 80vh;
 }
 
+/* Floating Scroll-to-Top Action Button */
+.back-to-top-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #fe424d;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(254, 66, 77, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1050;
+}
+
+.back-to-top-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top-btn:hover {
+    background-color: #e0313c;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(254, 66, 77, 0.55);
+    color: #ffffff;
+}
