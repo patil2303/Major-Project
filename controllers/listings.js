@@ -1,8 +1,58 @@
-const { response } = require("express");
 const Listing = require("../models/listing");
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+
+async function geocodeAddress(address) {
+    const defaultCoords = [77.2090, 28.6139];
+    if (!address || typeof address !== 'string') {
+        return { type: "Point", coordinates: defaultCoords };
+    }
+
+    const googleKey = process.env.GOOGLE_MAPS_API_KEY;
+
+    // 1. Try Google Maps Geocoding API
+    if (googleKey && googleKey.trim()) {
+        try {
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleKey.trim()}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.status === "OK" && data.results && data.results[0] && data.results[0].geometry) {
+                const { lat, lng } = data.results[0].geometry.location;
+                return { type: "Point", coordinates: [lng, lat] };
+            }
+        } catch (err) {
+            console.warn("Google geocoding error:", err.message);
+        }
+    }
+
+    // 2. Try OpenStreetMap Nominatim as fallback
+    try {
+        const osmUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        const res = await fetch(osmUrl, {
+            headers: { 'User-Agent': 'HomigoPropertyApp/1.0' }
+        });
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].lat && data[0].lon) {
+            return {
+                type: "Point",
+                coordinates: [parseFloat(data[0].lon), parseFloat(data[0].lat)]
+            };
+        }
+    } catch (err) {
+        console.warn("OSM geocoding fallback notice:", err.message);
+    }
+
+    return { type: "Point", coordinates: defaultCoords };
+}
+
+function getFileUrl(file) {
+    if (!file) return '';
+    if (file.path && (file.path.startsWith('http://') || file.path.startsWith('https://'))) {
+        return file.path;
+    }
+    if (file.secure_url) return file.secure_url;
+    if (file.url) return file.url;
+    if (file.filename) return '/uploads/' + file.filename;
+    return file.path || '';
+}
 
 
 
@@ -38,6 +88,14 @@ module.exports.showListing = async (req, res) => {
     return res.redirect("/listings");
   }
 
+  if (!listing.owner) {
+    listing.owner = {
+      _id: null,
+      username: "Homigo Superhost",
+      email: listing.ownerEmail || "host@homigo.com"
+    };
+  }
+
   // Build a single gallery array (main image first, then unique otherImages)
   const galleryImages = [];
   const seen = new Set();
@@ -59,35 +117,47 @@ module.exports.showListing = async (req, res) => {
 }
 
 module.exports.createListing = async (req, res, next) => {
-  let response = await geocodingClient.forwardGeocode({
-    query: req.body.listing.location,
-    limit: 1
-  }).send();
+  let geometry = await geocodeAddress(req.body.listing.location);
 
   let { listing } = req.body;
 
-  // debug
-  console.log('createListing - uploaded files count:', req.files && req.files.length);
-
-  // Handle uploaded files: first uploaded file -> mainImage, rest -> otherImages
+  // Handle uploaded files
   let mainImage = { url: '', filename: '' };
   let otherImages = [];
 
   if (req.files && req.files.length > 0) {
-    const first = req.files[0];
-    mainImage.url = first.path || first.location || first.secure_url || first.url;
-    mainImage.filename = first.filename;
-    if (req.files.length > 1) {
-      otherImages = req.files.slice(1).map(f => ({ url: f.path || f.location || f.secure_url || f.url, filename: f.filename }));
+    const mainFile = req.files.find(f => f.fieldname === 'listing[image]' || f.fieldname === 'image');
+    const galleryFiles = req.files.filter(f => f.fieldname === 'listing[otherImages]' || f.fieldname === 'otherImages');
+
+    if (mainFile) {
+      mainImage.url = getFileUrl(mainFile);
+      mainImage.filename = mainFile.filename || 'uploaded-image';
+    } else if (galleryFiles.length > 0 && !listing.imageUrl) {
+      const first = galleryFiles[0];
+      mainImage.url = getFileUrl(first);
+      mainImage.filename = first.filename || 'uploaded-image';
+      galleryFiles.slice(1).forEach(f => {
+        otherImages.push({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' });
+      });
+    }
+
+    if (mainFile && galleryFiles.length > 0) {
+      galleryFiles.forEach(f => {
+        otherImages.push({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' });
+      });
     }
   } else if (req.file) {
-    mainImage.url = req.file.path || req.file.location || req.file.secure_url || req.file.url;
-    mainImage.filename = req.file.filename;
-  } else if (listing.imageUrl) {
+    mainImage.url = getFileUrl(req.file);
+    mainImage.filename = req.file.filename || 'uploaded-image';
+  }
+
+  if (!mainImage.url && listing.imageUrl) {
     mainImage.url = listing.imageUrl;
     mainImage.filename = '';
-  } else {
-    mainImage.url = "https://media.istockphoto.com/id/474185479/photo/barbados.jpg?s=612x612&w=0&k=20&c=CoMAIsVOAPd6IzyrigoQdTn6POtp-OSnMv0cS9AzBzc=";
+  }
+
+  if (!mainImage.url) {
+    mainImage.url = "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80";
     mainImage.filename = "default.jpg";
   }
 
@@ -107,15 +177,20 @@ module.exports.createListing = async (req, res, next) => {
       unique.push(img);
     }
   });
-  otherImages = unique.slice(0, 5); // limit if desired
+  otherImages = unique.slice(0, 5);
+
+  const ownerEmail = (listing.ownerEmail && listing.ownerEmail.trim()) || (req.user && req.user.email) || "host@homigo.com";
+  const ownerPhone = (listing.ownerPhone && listing.ownerPhone.trim()) || (req.user && req.user.phoneNumber) || "+919999999999";
 
   // Now create and save
   const newListing = new Listing({
     ...listing,
+    ownerEmail,
+    ownerPhone,
     image: mainImage,
     otherImages,
     owner: req.user._id,
-    geometry: response.body.features[0].geometry
+    geometry
   });
 
   await newListing.save();
@@ -130,7 +205,7 @@ module.exports.renderEditForm = async (req, res) => {
     req.flash("error" ,"Listing u requested for does not exist!");
     res.redirect("/listings");
   }
-  let originalImageUrl = listing.image.url;
+  let originalImageUrl = (listing.image && listing.image.url) ? listing.image.url : '/images/placeholder.jpg';
   originalImageUrl = originalImageUrl.replace("/upload","/upload/h_300,w_250,c_fill");
   res.render("listings/edit.ejs", { listing, originalImageUrl });
 }
@@ -140,16 +215,20 @@ module.exports.updateListing = async (req, res) => {
   let { listing } = req.body;
   let updatedListing = await Listing.findById(id);
 
-  console.log('updateListing - uploaded files count:', req.files && req.files.length);
-
-  // Handle uploaded files: first file => main image, rest append to otherImages
+  // Handle uploaded files
   if (req.files && req.files.length > 0) {
-    const first = req.files[0];
-    updatedListing.image = { url: first.path || first.location || first.secure_url || first.url, filename: first.filename };
-    const newOtherFromFiles = req.files.slice(1).map(f => ({ url: f.path || f.location || f.secure_url || f.url, filename: f.filename }));
-    updatedListing.otherImages = (updatedListing.otherImages || []).concat(newOtherFromFiles);
+    const mainFile = req.files.find(f => f.fieldname === 'listing[image]' || f.fieldname === 'image');
+    const galleryFiles = req.files.filter(f => f.fieldname === 'listing[otherImages]' || f.fieldname === 'otherImages');
+
+    if (mainFile) {
+      updatedListing.image = { url: getFileUrl(mainFile), filename: mainFile.filename || 'uploaded-image' };
+    }
+    if (galleryFiles.length > 0) {
+      const newOtherFromFiles = galleryFiles.map(f => ({ url: getFileUrl(f), filename: f.filename || 'uploaded-image' }));
+      updatedListing.otherImages = (updatedListing.otherImages || []).concat(newOtherFromFiles);
+    }
   } else if (req.file) {
-    updatedListing.image = { url: req.file.path || req.file.location || req.file.secure_url || req.file.url, filename: req.file.filename };
+    updatedListing.image = { url: getFileUrl(req.file), filename: req.file.filename || 'uploaded-image' };
   } else if (listing.imageUrl) {
     updatedListing.image = { url: listing.imageUrl, filename: '' };
   }
@@ -181,10 +260,15 @@ module.exports.updateListing = async (req, res) => {
   // Update other scalar fields
   updatedListing.title = listing.title;
   updatedListing.description = listing.description;
-  updatedListing.location = listing.location;
+  if (listing.location && listing.location !== updatedListing.location) {
+    updatedListing.geometry = await geocodeAddress(listing.location);
+    updatedListing.location = listing.location;
+  }
   updatedListing.country = listing.country;
   updatedListing.price = listing.price;
   if (listing.category !== undefined) updatedListing.category = listing.category;
+  if (listing.ownerEmail) updatedListing.ownerEmail = listing.ownerEmail;
+  if (listing.ownerPhone) updatedListing.ownerPhone = listing.ownerPhone;
 
   await updatedListing.save();
   req.flash("success", "Listing Updated!");

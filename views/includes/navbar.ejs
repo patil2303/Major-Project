@@ -1,99 +1,93 @@
-<style>
-  /* Navbar / search styling */
-  .navbar-brand { color: #fe424d; font-weight: 700; font-size: 1.25rem; }
-  .nav-link { color: #343a40; margin-right: .25rem; }
-  .nav-link:hover { color: #fe424d; }
-  .nav-link.active { color: #fe424d; font-weight: 600; }
-
-  .search-form {
-    max-width: 520px;
-    width: 100%;
-    display:flex;
-    gap: .5rem;
-    align-items:center;
-  }
-  .search-inp {
-    border-radius: 40px;
-    padding: .45rem 1rem;
-    font-size: .95rem;
-    border: 1px solid #dee2e6;
-    box-shadow: none;
-  }
-  .search-inp:focus { outline: none; box-shadow: 0 0 0 .15rem rgba(254,66,77,.08); border-color: #fe424d; }
-
-  .search-btn{
-    background-color: #fe424d;
-    color: white;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    padding: .45rem .9rem;
-    border-radius: 40px;
-    border: none;
-  }
-  .search-btn:hover { background-color: #e63b41; color: white; }
-  .search-btn i { margin-right: .5rem; }
-
-  /* Right-side actions */
-  .nav-actions .nav-link { margin-left: .25rem; }
-  .btn-add { color: #fe424d; border: 1px solid transparent; }
-  .btn-add:hover { background-color: rgba(254,66,77,0.06); }
-
-  /* Mobile adjustments */
-  @media (max-width: 767.98px) {
-    .search-form { max-width: 100%; margin: .5rem 0; }
-    .navbar-collapse { padding-top: .5rem; padding-bottom: .5rem; }
-  }
-</style>
-
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="/listings">
-      <i class="fa-solid fa-compass me-2"></i> Homigo
+<nav class="navbar navbar-expand-lg navbar-glossy">
+  <div class="container-fluid px-0">
+    <!-- Brand -->
+    <a class="navbar-brand-homigo" href="/">
+      <i class="fa-solid fa-compass"></i>
+      <span>Homigo</span>
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <!-- Mobile Toggler -->
+    <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#homigoNavContent"
+            aria-controls="homigoNavContent" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fa-solid fa-bars fs-5 text-dark"></i>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <!-- Left links -->
-      <ul class="navbar-nav me-auto mb-2 mb-md-0">
-        <li class="nav-item"><a class="nav-link" href="/listings">Explore</a></li>
-        <li class="nav-item"><a class="nav-link" href="/bookings">My Bookings</a></li>
-        <% if (currUser) { %>
-          <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
-        <% } %>
-      </ul>
-
-      <!-- Centered search -->
-      <form class="search-form mx-auto d-none d-md-flex" role="search" action="/listings" method="GET">
-        <input class="form-control search-inp" type="search" name="search" placeholder="Search by location..."
-               value="<%= typeof search !== 'undefined' ? search : '' %>">
-        <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
-      </form>
-
-      <!-- Right actions -->
-      <ul class="navbar-nav ms-auto align-items-center nav-actions">
+    <!-- Collapsible Nav Items -->
+    <div class="collapse navbar-collapse" id="homigoNavContent">
+      <!-- Left Links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center ms-lg-3 gap-1">
         <li class="nav-item">
-          <a class="nav-link btn-add" href="/listings/new">Add Hotel</a>
+          <a class="nav-link-item" href="/listings">
+            <i class="fa-solid fa-house-chimney me-1 text-muted"></i> Explore
+          </a>
         </li>
-
-        <% if (!currUser) { %>
-          <li class="nav-item"><a class="nav-link" href="/signup"><b>Sign up</b></a></li>
-          <li class="nav-item"><a class="nav-link" href="/login"><b>Log in</b></a></li>
-        <% } else { %>
+        <li class="nav-item">
+          <a class="nav-link-item" href="/bookings">
+            <i class="fa-solid fa-suitcase-rolling me-1 text-muted"></i> My Bookings
+          </a>
+        </li>
+        <% if (currUser) { %>
           <li class="nav-item">
-            <a class="nav-link" href="/logout"><b>Log out</b></a>
+            <a class="nav-link-item" href="/wallet">
+              <i class="fa-solid fa-wallet me-1 text-muted"></i> Wallet
+            </a>
           </li>
         <% } %>
       </ul>
 
-      <!-- Mobile search (visible on small screens) -->
-      <form class="search-form d-md-none mt-2 w-100" role="search" action="/listings" method="GET">
-        <input class="form-control search-inp" type="search" name="search" placeholder="Search by location..."
+      <!-- Centered Search Capsule -->
+      <form class="nav-search-capsule mx-auto d-none d-lg-flex" role="search" action="/listings" method="GET">
+        <input class="nav-search-input" type="search" name="search" placeholder="Search India (e.g. Goa, Jaipur, Manali)..."
                value="<%= typeof search !== 'undefined' ? search : '' %>">
+        <button class="nav-search-btn" type="submit" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+
+      <!-- Right Actions -->
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-2 mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="btn-host-action d-inline-flex align-items-center gap-1" href="/listings/new">
+            <i class="fa-solid fa-plus text-danger"></i>
+            <span>Host a Stay</span>
+          </a>
+        </li>
+
+        <% if (!currUser) { %>
+          <li class="nav-item">
+            <a class="nav-link-item fw-semibold" href="/login">Log in</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn-brand-solid" href="/signup">Sign up</a>
+          </li>
+        <% } else { %>
+          <!-- User Dropdown Menu -->
+          <li class="nav-item dropdown">
+            <a class="nav-link-item dropdown-toggle d-inline-flex align-items-center gap-2 fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="rounded-circle bg-danger text-white d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                <%= currUser.username.charAt(0).toUpperCase() %>
+              </div>
+              <span><%= currUser.username %></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end glossy-panel border-0 shadow-lg py-2 mt-2" style="min-width: 200px;">
+              <li><a class="dropdown-item py-2" href="/profile"><i class="fa-regular fa-user me-2 text-muted"></i> My Profile</a></li>
+              <li><a class="dropdown-item py-2" href="/bookings"><i class="fa-solid fa-calendar-check me-2 text-muted"></i> Reservations</a></li>
+              <li><a class="dropdown-item py-2" href="/wallet"><i class="fa-solid fa-coins me-2 text-warning"></i> Homigo Wallet</a></li>
+              <li><a class="dropdown-item py-2" href="/listings/new"><i class="fa-solid fa-house-chimney-medical me-2 text-danger"></i> Host New Stay</a></li>
+              <li><hr class="dropdown-divider my-1"></li>
+              <li><a class="dropdown-item py-2 text-danger fw-semibold" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Log out</a></li>
+            </ul>
+          </li>
+        <% } %>
+      </ul>
+
+      <!-- Mobile Search Form (Visible only on small screens) -->
+      <form class="nav-search-capsule d-lg-none mt-3 w-100" role="search" action="/listings" method="GET">
+        <input class="nav-search-input" type="search" name="search" placeholder="Search India (e.g. Goa, Jaipur, Manali)..."
+               value="<%= typeof search !== 'undefined' ? search : '' %>">
+        <button class="nav-search-btn" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
       </form>
     </div>
   </div>

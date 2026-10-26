@@ -29,25 +29,34 @@ module.exports.savRedirectUrl = (req, res, next) =>{
 module.exports.isOwner = async (req, res, next) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
-  if(!listing.owner._id.equals(res.locals.currUser._id)){
+  if (!listing) {
+    req.flash("error", "Listing you requested does not exist!");
+    return res.redirect("/listings");
+  }
+  const ownerId = listing.owner && (listing.owner._id || listing.owner);
+  if (!ownerId || !res.locals.currUser || !ownerId.equals(res.locals.currUser._id)) {
     req.flash("error", "You are not the Owner of this listing");
-    return res.redirect(`/listings/${id}`)
+    return res.redirect(`/listings/${id}`);
   }
   next();
 }
 
 module.exports.validateListing = (req, res, next) => {
+    if (!req.body || !req.body.listing) {
+        req.body = req.body || {};
+        req.body.listing = req.body.listing || {};
+    }
     // Set default image if not provided
     if (!req.body.listing.image || !req.body.listing.image.url) {
         req.body.listing.image = {
-            url: "https://media.istockphoto.com/id/474185479/photo/barbados.jpg?s=612x612&w=0&k=20&c=CoMAIsVOAPd6IzyrigoQdTn6POtp-OSnMv0cS9AzBzc=",
+            url: "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80",
             filename: "default.jpg",
         };
     }
 
-  const { error } = listingSchema.validate(req.body, { abortEarly: false, allowUnknown: true });
+    const { error } = listingSchema.validate(req.body, { abortEarly: false, allowUnknown: true });
     if (error) {
-        const errMsg = error.details.map(el => el.message).join(",");
+        const errMsg = error.details.map(el => el.message).join(", ");
         throw new ExpressError(400, errMsg);
     } else {
         next();

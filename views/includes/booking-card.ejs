@@ -1,63 +1,88 @@
-<!-- views/includes/booking-card.ejs -->
-<div class="card shadow-sm booking-card">
-    <div class="card-body p-0">
-        <div class="price-header text-center p-4">
-            <div class="price-amount">₹<%= listing.price.toLocaleString('en-IN') %></div>
-            <div class="price-sub">/night</div>
-        </div>
-
-        <div class="p-3">
-            <% if (currUser) { %>
-                <form action="/listings/<%= listing._id %>/bookings" method="POST" id="bookingForm">
-                    <div class="mb-3">
-                        <label for="checkIn" class="form-label small">Check-in</label>
-                        <input type="date" class="form-control date-input" id="checkIn" name="checkIn" required min="<%= new Date().toISOString().split('T')[0] %>">
-                    </div>
-                    <div class="mb-3">
-                        <label for="checkOut" class="form-label small">Check-out</label>
-                        <input type="date" class="form-control date-input" id="checkOut" name="checkOut" required min="<%= new Date().toISOString().split('T')[0] %>">
-                    </div>
-
-                    <div class="price-details mb-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="text-muted small">₹<%= listing.price %> × <span id="numberOfNights">0</span> nights</div>
-                            <div id="subtotal" class="fw-semibold">₹0</div>
-                        </div>
-                        <hr />
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="fw-bold">Total</div>
-                            <div id="totalPrice" class="fw-bold">₹0</div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-book w-100" id="bookNowBtn">Book Now</button>
-                </form>
-            <% } else { %>
-                <div class="text-center py-3">
-                    <p class="mb-2">Please <a href="/login">login</a> to book</p>
-                    <a href="/login" class="btn btn-outline-primary btn-sm">Login</a>
-                </div>
-            <% } %>
-        </div>
+<!-- Modern Light-Themed Glossy Glass Booking Widget -->
+<div class="glossy-panel p-4 border-0 shadow-lg" style="border-radius: 1.5rem; background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(20px);">
+  
+  <!-- Price Header -->
+  <div class="d-flex align-items-baseline justify-content-between mb-3 pb-3 border-bottom">
+    <div>
+      <span class="fs-3 fw-bold text-dark">&#8377; <%= listing.price.toLocaleString('en-IN') %></span>
+      <span class="text-muted small">/ night</span>
     </div>
+    <div class="d-flex align-items-center gap-1 small fw-semibold">
+      <i class="fa-solid fa-star text-warning"></i>
+      <span>4.95</span>
+      <span class="text-muted">(<%= listing.reviews.length %>)</span>
+    </div>
+  </div>
+
+  <% if (currUser) { %>
+    <form action="/listings/<%= listing._id %>/bookings" method="POST" id="bookingForm">
+      <!-- Dates Selection Box -->
+      <div class="rounded-3 border overflow-hidden mb-3 bg-white">
+        <div class="row g-0">
+          <div class="col-6 border-end p-2">
+            <label for="checkIn" class="form-label-custom small mb-0 text-muted" style="font-size: 0.72rem;">CHECK-IN</label>
+            <input type="date" class="form-control border-0 p-0 shadow-none fw-semibold small" id="checkIn" name="checkIn" required min="<%= new Date().toISOString().split('T')[0] %>">
+          </div>
+          <div class="col-6 p-2">
+            <label for="checkOut" class="form-label-custom small mb-0 text-muted" style="font-size: 0.72rem;">CHECK-OUT</label>
+            <input type="date" class="form-control border-0 p-0 shadow-none fw-semibold small" id="checkOut" name="checkOut" required min="<%= new Date().toISOString().split('T')[0] %>">
+          </div>
+        </div>
+      </div>
+
+      <!-- Guests Selector -->
+      <div class="rounded-3 border p-2 mb-3 bg-white">
+        <label class="form-label-custom small mb-0 text-muted" style="font-size: 0.72rem;">GUESTS</label>
+        <select class="form-select border-0 p-0 shadow-none fw-semibold small" name="guests" id="guestsSelect">
+          <option value="1">1 Guest</option>
+          <option value="2" selected>2 Guests</option>
+          <option value="3">3 Guests</option>
+          <option value="4">4 Guests</option>
+        </select>
+      </div>
+
+      <!-- Live Calculation Breakdown -->
+      <div class="p-3 rounded-3 mb-3 bg-light-subtle border" id="priceCalculationBox">
+        <div class="d-flex justify-content-between text-muted small mb-2">
+          <span>&#8377; <%= listing.price.toLocaleString('en-IN') %> &times; <span id="numberOfNights">1</span> night(s)</span>
+          <span class="fw-semibold text-dark" id="subtotal">&#8377; <%= listing.price.toLocaleString('en-IN') %></span>
+        </div>
+        <div class="d-flex justify-content-between text-muted small mb-2">
+          <span>Cleaning & service fee</span>
+          <span class="fw-semibold text-dark" id="cleaningFee">&#8377; 450</span>
+        </div>
+        <div class="d-flex justify-content-between text-muted small mb-2">
+          <span>Taxes (18% GST)</span>
+          <span class="fw-semibold text-dark" id="taxAmount">&#8377; <%= Math.round(listing.price * 0.18).toLocaleString('en-IN') %></span>
+        </div>
+        <hr class="my-2 border-secondary-subtle">
+        <div class="d-flex justify-content-between fw-bold fs-6 text-dark">
+          <span>Total Payable</span>
+          <span class="text-danger" id="totalPrice">&#8377; <%= (listing.price + 450 + Math.round(listing.price * 0.18)).toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+
+      <!-- Instant Reserve Button -->
+      <button type="submit" class="btn-brand-solid w-100 justify-content-center py-3 fs-6" id="bookNowBtn">
+        <i class="fa-solid fa-bolt"></i> Instant Reserve
+      </button>
+      <div class="text-center text-muted small mt-2">
+        <i class="fa-solid fa-lock me-1"></i> You won't be charged yet
+      </div>
+    </form>
+  <% } else { %>
+    <div class="text-center py-4">
+      <div class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px; font-size: 1.25rem;">
+        <i class="fa-solid fa-user-lock"></i>
+      </div>
+      <h6 class="fw-bold mb-1">Sign in to Reserve</h6>
+      <p class="text-muted small mb-3">Join or login to Homigo to confirm dates and secure instant booking.</p>
+      <a href="/login" class="btn-brand-solid w-100 justify-content-center py-2">Log In to Book</a>
+      <a href="/signup" class="btn btn-link text-muted small mt-2 text-decoration-none">Don't have an account? Sign up</a>
+    </div>
+  <% } %>
+
 </div>
-
-<style>
-.booking-card { border-radius: 1rem; overflow: hidden; }
-.price-header { background: linear-gradient(135deg,#2dd4bf,#06b6d4); color: #fff; display: none; }
-.price-amount { font-size: 1.65rem; font-weight: 800; }
-.price-sub { font-size: 0.9rem; opacity: 0.95; }
-.date-input { padding: .8rem; border-radius: .6rem; border: 1px solid #e6e9ee; }
-.price-details { background: #fbfcfd; padding: .75rem 1rem; border-radius: .5rem; border: 1px solid #f0f2f5; }
-.btn-book { background: linear-gradient(180deg,#138f6b,#0b6f4f); color: #fff; border: none; padding: .6rem 1rem; border-radius: .5rem; font-weight: 600; }
-.btn-book:hover { opacity: .95; }
-.form-label.small { font-size: .85rem; color: #6b7280; }
-
-/* Show price header inside booking card on small screens only (when sidebar collapses) */
-@media (max-width: 767px) {
-    .price-header { display: block; }
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -65,32 +90,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkOutInput = document.getElementById('checkOut');
     const numberOfNightsSpan = document.getElementById('numberOfNights');
     const subtotalSpan = document.getElementById('subtotal');
+    const taxAmountSpan = document.getElementById('taxAmount');
     const totalPriceSpan = document.getElementById('totalPrice');
     const pricePerNight = <%= listing.price %>;
 
+    // Pre-fill tomorrow and day after tomorrow if empty
+    if (checkInInput && !checkInInput.value) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dayAfter = new Date(today);
+        dayAfter.setDate(dayAfter.getDate() + 3);
+        
+        checkInInput.value = tomorrow.toISOString().split('T')[0];
+        checkOutInput.value = dayAfter.toISOString().split('T')[0];
+        updatePrice();
+    }
+
     function updatePrice() {
+        if (!checkInInput || !checkOutInput) return;
         const checkIn = new Date(checkInInput.value);
         const checkOut = new Date(checkOutInput.value);
         if (checkIn && checkOut && checkOut > checkIn) {
             const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-            const total = nights * pricePerNight;
-            numberOfNightsSpan.textContent = nights;
-            subtotalSpan.textContent = `₹${total}`;
-            totalPriceSpan.textContent = `₹${total}`;
-        } else {
-            numberOfNightsSpan.textContent = '0';
-            subtotalSpan.textContent = '₹0';
-            totalPriceSpan.textContent = '₹0';
+            const subtotal = nights * pricePerNight;
+            const cleaning = 450;
+            const tax = Math.round(subtotal * 0.18);
+            const total = subtotal + cleaning + tax;
+
+            if (numberOfNightsSpan) numberOfNightsSpan.textContent = nights;
+            if (subtotalSpan) subtotalSpan.textContent = `₹ ${subtotal.toLocaleString('en-IN')}`;
+            if (taxAmountSpan) taxAmountSpan.textContent = `₹ ${tax.toLocaleString('en-IN')}`;
+            if (totalPriceSpan) totalPriceSpan.textContent = `₹ ${total.toLocaleString('en-IN')}`;
         }
     }
 
-    checkInInput.addEventListener('change', function() {
-        const nextDay = new Date(checkInInput.value);
-        nextDay.setDate(nextDay.getDate() + 1);
-        checkOutInput.min = nextDay.toISOString().split('T')[0];
-        updatePrice();
-    });
+    if (checkInInput && checkOutInput) {
+        checkInInput.addEventListener('change', function() {
+            const nextDay = new Date(checkInInput.value);
+            nextDay.setDate(nextDay.getDate() + 1);
+            checkOutInput.min = nextDay.toISOString().split('T')[0];
+            if (new Date(checkOutInput.value) <= new Date(checkInInput.value)) {
+                checkOutInput.value = nextDay.toISOString().split('T')[0];
+            }
+            updatePrice();
+        });
 
-    checkOutInput.addEventListener('change', updatePrice);
+        checkOutInput.addEventListener('change', updatePrice);
+    }
 });
 </script>

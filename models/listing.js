@@ -48,9 +48,9 @@ const listingSchema = new Schema({
         required: true,
         validate: {
             validator: function(v) {
-                return /^\+?[1-9]\d{1,14}$/.test(v);
+                return /^\+?[0-9\s\-()]{7,18}$/.test(v);
             },
-            message: 'Phone number must be in E.164 format (+1234567890)'
+            message: 'Invalid phone number format'
         }
     },
     geometry: {
